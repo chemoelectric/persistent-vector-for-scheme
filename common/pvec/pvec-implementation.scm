@@ -67,7 +67,7 @@
        (vector-set! leaf j x)
        leaf))))
 
-(define-syntax copy-to-leaf!
+(define-syntax copy-to-leaf! ;;;;;;;; FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME
   (syntax-rules ()
     ((¶ leaf k0 k1 w j)
      (let ()
@@ -77,7 +77,7 @@
            (vector-set! leaf k (vector-ref w j))
            (loop (fx+ k 1) (fx+ j 1))))))))
 
-(define-syntax new-leaf-copied-to
+(define-syntax new-leaf-copied-to ;;;;;;;; FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME
   (syntax-rules ()
     ((¶ w j n)
      (let ((leaf (make-leaf-node)))
@@ -86,7 +86,7 @@
     ((¶ w j)
      (new-leaf-copied-to w j (node-size)))))
 
-(define-syntax leaf-copy-copied-to
+(define-syntax leaf-copy-copied-to ;;;;;;;; FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME
   (syntax-rules ()
     ((¶ leaf k0 k1 w j)
      (let ((leaf (vector-copy leaf)))
@@ -147,7 +147,105 @@
              (let ((new-tail (leaf-copy-set tail n-tail x)))
                (construct-pvec new-length shift node new-tail)))))))
     ((v . x*)
-     'FIXME)))
+     (pvec-push-from-list v x*))))
+
+(define (pvec-push-from-list v x*)
+  ;; NOTE: This implementation pushes nodes into the trie one at a
+  ;; time, producing a complete trie again and again, until the data
+  ;; to be pushed is used up. It might be better to write something
+  ;; that reduces the number of intermediate allocations.
+  (cond
+    ((null-list? x*)
+     ;; Push zero entries. Just return the persistent vector,
+     ;; unchanged.
+     v)
+    ((fxzero? (pvec-length v))
+     ;; If the original persistent vector is empty, then simply start
+     ;; a new one.
+     (list->pvec x*))
+    (else
+     (let* ((len (pvec-length v))
+            (shift (pvec-shift v))
+            (node (pvec-node v))
+            (tail (pvec-tail v))
+            (n (length x*))
+            (n-tail (tail-length len))
+            (n-fill (fx- (node-size) n-tail)))
+       (cond
+         ((<= n n-fill)
+          ;; There is room in the tail for all the objects to be
+          ;; pushed.
+          (let ((tail (vector-copy tail))
+                (i len))
+            (do-ec (:list x x*)
+              (begin
+                (vector-set! tail i x)
+                (set! i (fx+ i 1))))
+            (construct-pvec (fx+ len n) shift node tail)))
+         (else
+          (pvec-pushes-into-the-trie v x* n len shift node tail
+                                     n-tail n-fill)))))))
+
+(define (pvec-pushes-into-the-trie v x* n len shift node tail
+                                   n-tail n-fill)
+  (let*-values (((n-past-fill) (fx- n n-fill))
+                ((n-new-tail) (tail-length n-past-fill))
+                ((n-middle) (fx- n-past-fill n-new-tail))
+                ;;
+                ;; Fill the old tail with initial regular-vector
+                ;; entries, and move the filled node to the trie.
+                ((shift node)
+                 (copy-leaf-into-trie (fx- len n-tail) shift node
+                                      tail n-tail x*))
+                ((x*) (drop (fx- (node-size) n-tail) x*))
+                ;;
+                ;; Push the middle regular-vector entries to the trie.
+                ((trie-size) (fx+ (fx- len n-tail) (node-size)))
+                ((shift node x*)
+                 (let loop ((j 0)
+                            (shift shift)
+                            (node node)
+                            (x* x*))
+                   (if (fx=? j n-middle)
+                     (values shift node x*)
+                     (let*-values
+                         (((shift node)
+                           (new-leaf-into-trie (fx+ trie-size j)
+                                               shift node x*))
+                          ((x*) (drop (node-size) x*)))
+                       (loop (fx+ j (node-size)) shift node x*)))))
+                ;;
+                ;; Fill in the new tail from the final
+                ;; regular-vector entries.
+                ((tail)
+                 (let ((tail (make-vector (node-size) #f))
+                       (i 0))
+                   (do-ec (:list x x*)
+                     (begin
+                       (vector-set! tail i x)
+                       (set! i (fx+ i 1))))
+                   tail)))
+    ;;
+    ;; And return the new persistent vector.
+    (construct-pvec (fx+ len n) shift node tail)))
+
+(define (copy-leaf-into-trie trie-length shift node tail n-tail x*)
+  (let ((leaf (vector-copy tail))
+        (i n-tail))
+    (do-ec (:list x x*)
+      (begin
+        (vector-set! leaf i x)
+        (set! i (fx+ i 1))))
+    (move-leaf-into-trie trie-length shift node leaf)))
+
+(define (new-leaf-into-trie trie-length shift node x*)
+  (let ((leaf (make-new-leaf))
+        (i 0))
+    (do-ec (:list x x*)
+      (begin
+        (vector-set! leaf i x)
+        (set! i (fx+ i 1))))
+    (move-leaf-into-trie trie-length shift node leaf)))
 
 (define (move-leaf-into-trie trie-length shift node leaf)
   (cond
@@ -204,7 +302,7 @@
        (else
         (pvec-pop-no-check v n))))))
 
-(define (pvec-pop-no-check v n procs)
+(define (pvec-pop-no-check v n)
   (let* ((len (pvec-length v))
          (shift (pvec-shift v))
          (node (pvec-node v))
@@ -213,16 +311,15 @@
     (if (fx<? n n-tail)
       (construct-pvec (fx- len n) shift node
                       ;; Simply shorten the current tail.
-                      (free-unused-objects tail n (node-size)))
+                      (free-unused-objects tail (fx- len n)))
       (pvec-pop-requiring-a-new-tail v n len shift node tail))))
 
 (define (pvec-pop-requiring-a-new-tail v n len shift node tail)
   (let* ((new-length (fx- len n))
          (n-new-tail (tail-length new-length))
          (n-new-trie (fx- new-length n-new-tail))
-         (new-tail
-          (free-unused-objects (find-entry v n-new-trie)
-                               n-new-tail (node-size))))
+         (new-tail (free-unused-objects (find-entry v n-new-trie)
+                                        n-new-tail)))
     (if (fx=? new-length n-new-tail)
       (construct-pvec new-length 0 #f new-tail) ;; No trie.
       (let ((i (fx- n-new-trie 1)))

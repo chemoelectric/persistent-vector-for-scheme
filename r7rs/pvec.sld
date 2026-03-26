@@ -7,6 +7,7 @@
           pvec?
           pvec-length
           pvec-push
+          pvec-push-from-list
           pvec-pop
           pvec-ref
           pvec-set
