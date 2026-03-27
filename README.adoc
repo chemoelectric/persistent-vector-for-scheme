@@ -1,7 +1,7 @@
 = Persistent vectors for Scheme
 
 This is a rewrite as portable Scheme of a CHICKEN egg I wrote several
-years ago. That, in turn, was adapted from generic C macro
+years ago. That, in turn, was adapted from a generic C macro
 implementation I wrote years earlier, and which was used to make Guile
 2.0 persistent vectors.
 
