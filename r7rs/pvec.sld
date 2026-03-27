@@ -6,6 +6,7 @@
   (export pvec
           list->pvec
           vector->pvec
+          generator->pvec
 
           pvec->list
           pvec->vector

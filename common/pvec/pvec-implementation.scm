@@ -178,7 +178,24 @@
           (let ((len (vector-length vec)))
             (check-indexes vec start end len)
             (pvec-pushes (construct 0 0 #f #f)
-                         (make-generator vec start end)))))))) )
+                         (make-generator vec start end))))))))
+
+  (constructor>
+   generator->pvec
+   (lambda (construct)
+     (case-lambda
+       ((gen!) (pvec-pushes (construct 0 0 #f #f) gen!))
+       ((gen! k)
+        (when (negative? k)
+          (error "non-negative value expected" k))
+        (let ((g! (let ((j k))
+                    (lambda ()
+                      (if (zero? j)
+                        (eof-object)
+                        (begin
+                          (set! j (- j 1))
+                          (gen!)))))))
+          (pvec-pushes (construct 0 0 #f #f) g!)))))) )
 
 (define (free-unused-objects tail length-of-tail)
   (if (fx=? length-of-tail (node-size))
