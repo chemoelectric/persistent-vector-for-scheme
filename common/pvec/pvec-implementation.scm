@@ -531,6 +531,51 @@
       (values shift (car nodes))
       (loop (create-parents nodes) (fx+ shift (bits))))))
 
+(define pvec->list
+  (case-lambda
+    ((v)
+     (let ((len (pvec-length v)))
+       (list-ec (:range i 0 len)
+         (pvec-ref v i))))
+    ((v start)
+     (let ((len (pvec-length v)))
+       (when (fxnegative? start)
+         (error "start index negative" start))
+       (unless (fx<=? start len)
+         (error "start index past end" v start))
+       (list-ec (:range i start len)
+         (pvec-ref v i))))
+    ((v start end)
+     (let ((len (pvec-length v)))
+       (when (fxnegative? start)
+         (error "start index negative" start))
+       (unless (fx<=? start end)
+         (error "start index greater than end index" start end))
+       (unless (fx<=? end len)
+         (error "end index past end" v end))
+       (list-ec (:range i start end)
+         (pvec-ref v i))))))
+
+(define pvec->generator
+  (case-lambda
+    ((v) (pvec->generator v 0 (pvec-length v)))
+    ((v start) (pvec->generator v start (pvec-length v)))
+    ((v start end)
+     (let ((len (pvec-length v)))
+       (when (fxnegative? start)
+         (error "start index negative" start))
+       (unless (fx<=? start end)
+         (error "start index greater than end index" start end))
+       (unless (fx<=? end len)
+         (error "end index past end" v end))
+       (let ((i start))
+         (lambda ()
+           (if (fx=? i end)
+             (eof-object)
+             (let ((elem (pvec-ref v i)))
+               (set! i (fx+ i 1))
+               elem))))))))
+
 ;;;-------------------------------------------------------------------
 ;;; local variables:
 ;;; mode: scheme
