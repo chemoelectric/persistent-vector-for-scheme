@@ -243,7 +243,7 @@
                 ((shift node)
                  (copy-leaf-into-trie (fx- len n-tail) shift node
                                       tail n-tail x*))
-                ((x*) (drop (fx- (node-size) n-tail) x*))
+                ((x*) (drop x* (fx- (node-size) n-tail)))
                 ;;
                 ;; Push the middle regular-vector entries to the trie.
                 ((trie-size) (fx+ (fx- len n-tail) (node-size)))
@@ -258,7 +258,7 @@
                          (((shift node)
                            (new-leaf-into-trie (fx+ trie-size j)
                                                shift node x*))
-                          ((x*) (drop (node-size) x*)))
+                          ((x*) (drop x* (node-size))))
                        (loop (fx+ j (node-size)) shift node x*)))))
                 ;;
                 ;; Fill in the new tail from the final
@@ -276,13 +276,13 @@
     (construct-pvec (fx+ len n) shift node tail)))
 
 (define (copy-leaf-into-trie trie-length shift node tail n-tail x*)
-  (let ((leaf (vector-copy tail))
-        (i n-tail))
-    (do-ec (:list x x*)
-      (begin
-        (vector-set! leaf i x)
-        (set! i (fx+ i 1))))
-    (move-leaf-into-trie trie-length shift node leaf)))
+  (let ((leaf (vector-copy tail)))
+    (let loop ((i n-tail)
+               (p x*))
+      (unless (fx=? i (node-size))
+        (vector-set! leaf i (car p))
+        (loop (fx+ i 1) (cdr p)))
+      (move-leaf-into-trie trie-length shift node leaf))))
 
 (define (new-leaf-into-trie trie-length shift node x*)
   (let ((leaf (make-leaf-node)))
