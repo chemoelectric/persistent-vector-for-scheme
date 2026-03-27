@@ -194,7 +194,7 @@
         (if (fx<? n maxlen)
           v
           (pvec-pushes-from-generator v gen!))))))
-  
+
 (define (pvec-pushes-from-list v x*)
   ;; NOTE: This implementation pushes nodes into the trie one at a
   ;; time, producing a complete trie again and again, until the data
@@ -285,13 +285,13 @@
     (move-leaf-into-trie trie-length shift node leaf)))
 
 (define (new-leaf-into-trie trie-length shift node x*)
-  (let ((leaf (make-leaf-node))
-        (i 0))
-    (do-ec (:list x x*)
-      (begin
-        (vector-set! leaf i x)
-        (set! i (fx+ i 1))))
-    (move-leaf-into-trie trie-length shift node leaf)))
+  (let ((leaf (make-leaf-node)))
+    (let loop ((i 0)
+               (p x*))
+      (unless (fx=? i (node-size))
+        (vector-set! leaf i (car p))
+        (loop (fx+ i 1) (cdr p)))
+      (move-leaf-into-trie trie-length shift node leaf))))
 
 (define (move-leaf-into-trie trie-length shift node leaf)
   (cond
