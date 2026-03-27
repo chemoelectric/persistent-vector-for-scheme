@@ -4,19 +4,27 @@
 (define-library (pvec)
 
   (export pvec
-          pvec?
-          pvec-length
-          pvec-push
-          pvec-pushes ;; elements from list or generator.
-          pvec-pop
-          pvec-ref
-          pvec-set
-          pvec-refs ;; Return elements as vector.
-          pvec-sets ;; Set elements from vector.
           list->pvec
+          vector->pvec
+
           pvec->list
           pvec->vector
-          pvec->generator)
+          pvec->generator
+
+          pvec?
+          pvec-length
+
+          pvec-push
+          pvec-pushes ;; elements from list or generator.
+
+          pvec-pop
+
+          pvec-ref
+          pvec-set
+
+          pvec-refs ;; Return elements as vector.
+          pvec-sets ;; Set elements from vector.
+          )
 
   (import (scheme base)
           (scheme case-lambda)

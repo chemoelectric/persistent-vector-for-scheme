@@ -53,7 +53,7 @@
   ;; extensions. Some other Schemes, have SRFI-42 implementations that
   ;; do not work or work only partially. So, instead of importing
   ;; SRFI-42, we include the SRFI-42 reference sources.
-  (import (except (rnrs (6)) error)
+  (import (except (rnrs (6)) error fxbit-set? fxcopy-bit)
           (srfi :23 error)
           (srfi :143 fixnums)
           (pvec)

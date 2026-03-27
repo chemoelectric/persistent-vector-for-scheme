@@ -120,18 +120,65 @@
          (error "end index past end" v end))))))
 
 (define-record-factory <pvec>
+
+  (predicate> pvec?)
+
+  (getter> 1 pvec-length)
+  (getter> 2 pvec-shift)
+  (getter> 3 pvec-node)
+  (getter> 4 pvec-tail)
+
   (constructor> construct-pvec)
+
   (constructor>
    pvec
    (lambda (construct)
      (case-lambda
        (() (construct 0 0 #f #f))
        (elem* (list->pvec elem*)))))
-  (predicate> pvec?)
-  (getter> 1 pvec-length)
-  (getter> 2 pvec-shift)
-  (getter> 3 pvec-node)
-  (getter> 4 pvec-tail))
+
+  (constructor>
+   list->pvec
+   (lambda (construct)
+     (lambda (lst)
+       (let ((n (length lst)))
+         (cond
+           ((fxzero? n) (construct 0 0 #f #f))
+           ((fx<=? n (node-size))
+            ;; Use just the first value returned by create-leaves.
+            (construct n 0 #f (create-leaves lst)))
+           (else
+            (let*-values (((tail leaves) (create-leaves lst))
+                          ((shift trie) (build-trie leaves)))
+              (construct n shift trie tail))))))))
+
+  (constructor>
+   vector->pvec
+   (lambda (construct)
+     (let ((make-generator
+            (lambda (vec start end)
+              (let ((i start))
+                (lambda ()
+                  (if (fx=? i end)
+                    (eof-object)
+                    (let ((elem (vector-ref vec i)))
+                      (set! i (fx+ i 1))
+                      elem)))))))
+       (case-lambda
+         ((vec)
+          (let ((len (vector-length vec)))
+            (pvec-pushes (construct 0 0 #f #f)
+                         (make-generator vec 0 len))))
+         ((vec start)
+          (let ((len (vector-length vec)))
+            (check-indexes vec start len)
+            (pvec-pushes (construct 0 0 #f #f)
+                         (make-generator vec start len))))
+         ((vec start end)
+          (let ((len (vector-length vec)))
+            (check-indexes vec start end len)
+            (pvec-pushes (construct 0 0 #f #f)
+                         (make-generator vec start end)))))))) )
 
 (define (free-unused-objects tail length-of-tail)
   (if (fx=? length-of-tail (node-size))
@@ -490,18 +537,6 @@
     (else
      (cons-path-to-leaf (fx- shift (bits)) #f i (cons #f path)))))
 
-(define (list->pvec lst)
-  (let ((n (length lst)))
-    (cond
-      ((fxzero? n) (pvec))
-      ((fx<=? n (node-size))
-       ;; Use just the first value returned by create-leaves.
-       (construct-pvec n 0 #f (create-leaves lst)))
-      (else
-       (let*-values (((tail leaves) (create-leaves lst))
-                     ((shift trie) (build-trie leaves)))
-         (construct-pvec n shift trie tail))))))
-
 (define (create-leaves lst)
   (let loop ((p lst)
              (leaves '()))
@@ -669,20 +704,20 @@
            (;; Set the first new leaf.
             ((node) (replace-leaf-copied-to
                      shift node i-node-first k-first
-                     node-size w j))
-            ((j) (fx+ j (fx- node-size k-first)))
+                     (node-size) w j))
+            ((j) (fx+ j (fx- (node-size) k-first)))
             ;;
             ;; Set the other new leaves except the final one.
             ((node j)
-             (let loop ((i-node (fx+ i-node-first node-size))
+             (let loop ((i-node (fx+ i-node-first (node-size)))
                         (node node)
                         (j j))
                (if (fx=? i-node i-node-last)
                  (values node j)
-                 (loop (fx+ i-node node-size)
+                 (loop (fx+ i-node (node-size))
                        (replace-leaf-copied-to shift node i-node
-                                               0 node-size w j)
-                       (fx+ j node-size)))))
+                                               0 (node-size) w j)
+                       (fx+ j (node-size))))))
             ;;
             ;; Set the final leaf.
             ((node tail)
