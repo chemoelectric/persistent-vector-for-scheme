@@ -4,7 +4,8 @@
 
 (library (pvec eager-comprehensions)
 
-  (export do-ec #;pvec-ec
+  (export pvec-ec
+          :pvec
 
           ;; Support for SRFI-158 generators.
           :generator
@@ -54,6 +55,7 @@
   ;; SRFI-42, we include the SRFI-42 reference sources.
   (import (except (rnrs (6)) error)
           (srfi :23 error)
+          (srfi :143 fixnums)
           (pvec)
           (pvec srfi-42)
           (pvec srfi-42-generator)

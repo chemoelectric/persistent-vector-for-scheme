@@ -3,7 +3,8 @@
 
 (define-library (pvec eager-comprehensions)
 
-  (export do-ec #;pvec-ec
+  (export pvec-ec
+          :pvec
 
           ;; Support for SRFI-158 generators.
           :generator
@@ -55,6 +56,12 @@
   (import (pvec))
   (import (pvec srfi-42))
   (import (pvec srfi-42-generator))
+  (cond-expand
+    (chicken-5 (import (srfi 143)))
+    ((library (scheme fixnum)) (import (scheme fixnum)))
+    ((library (srfi 143)) (import (srfi 143)))
+    (loko (import (srfi :143 fixnums)))
+    (else (import (srfi srfi-143))))
 
   (begin
 
