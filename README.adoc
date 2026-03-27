@@ -1,0 +1,10 @@
+= Persistent vectors for Scheme
+
+This is a rewrite as portable Scheme of a CHICKEN egg I wrote several
+years ago. That, in turn, was adapted from generic C macro
+implementation I wrote years earlier, and which was used to make Guile
+2.0 persistent vectors.
+
+I will document the interface here.
+
+The work should be considered unreliable until I write some tests.
