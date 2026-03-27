@@ -12,8 +12,10 @@
           pvec-pop
           pvec-ref
           pvec-set
+          pvec-refs
           list->pvec
           pvec->list
+          pvec->vector
           pvec->generator)
 
   (import (except (rnrs base (6))

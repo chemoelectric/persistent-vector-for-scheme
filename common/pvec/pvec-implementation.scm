@@ -67,6 +67,15 @@
        (vector-set! leaf j x)
        leaf))))
 
+(define-syntax copy-from-leaf!
+  (syntax-rules ()
+    ((¶ w j leaf k-first k-last+1)
+     (let loop ((k k-first)
+                (j j))
+       (unless (fx=? k k-last+1)
+         (vector-set! w j (vector-ref leaf k))
+         (loop (fx+ k 1) (fx+ j 1)))))))
+
 (define-syntax copy-to-leaf! ;;;;;;;; FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME
   (syntax-rules ()
     ((¶ leaf k0 k1 w j)
@@ -101,6 +110,23 @@
 (define-syntax masked
   (syntax-rules ()
     ((¶ i) (fxand i (mask)))))
+
+(define-syntax check-indexes
+  (syntax-rules ()
+    ((¶ v start len)
+     (begin
+       (when (fxnegative? start)
+         (error "start index negative" start))
+       (unless (fx<=? start len)
+         (error "start index past end" v start))))
+    ((¶ v start end len)
+     (begin
+       (when (fxnegative? start)
+         (error "start index negative" start))
+       (unless (fx<=? start end)
+         (error "start index greater than end index" start end))
+       (unless (fx<=? end len)
+         (error "end index past end" v end))))))
 
 (define-record-factory <pvec>
   (constructor> construct-pvec)
@@ -539,22 +565,20 @@
          (pvec-ref v i))))
     ((v start)
      (let ((len (pvec-length v)))
-       (when (fxnegative? start)
-         (error "start index negative" start))
-       (unless (fx<=? start len)
-         (error "start index past end" v start))
+       (check-indexes v start len)
        (list-ec (:range i start len)
          (pvec-ref v i))))
     ((v start end)
      (let ((len (pvec-length v)))
-       (when (fxnegative? start)
-         (error "start index negative" start))
-       (unless (fx<=? start end)
-         (error "start index greater than end index" start end))
-       (unless (fx<=? end len)
-         (error "end index past end" v end))
+       (check-indexes v start end len)
        (list-ec (:range i start end)
          (pvec-ref v i))))))
+
+(define pvec->vector
+  (case-lambda
+    ((v) (pvec->vector v 0 (pvec-length v)))
+    ((v start) (pvec->vector v start (pvec-length v)))
+    ((v start end) (pvec-refs v start (fx- end start)))))
 
 (define pvec->generator
   (case-lambda
@@ -562,12 +586,7 @@
     ((v start) (pvec->generator v start (pvec-length v)))
     ((v start end)
      (let ((len (pvec-length v)))
-       (when (fxnegative? start)
-         (error "start index negative" start))
-       (unless (fx<=? start end)
-         (error "start index greater than end index" start end))
-       (unless (fx<=? end len)
-         (error "end index past end" v end))
+       (check-indexes v start end len)
        (let ((i start))
          (lambda ()
            (if (fx=? i end)
@@ -575,6 +594,40 @@
              (let ((elem (pvec-ref v i)))
                (set! i (fx+ i 1))
                elem))))))))
+
+(define (pvec-refs v i n)
+  ;; Return n entries of the persistent vector v, starting at index i.
+  ;; Return the entries as a regular vector.
+  (let ((result (make-vector n)))
+    (copy-from-pvec! v i result 0 n)
+    result))
+
+(define (copy-from-pvec! v i w j n)
+  ;; Copy n entries from the persistent vector v, starting at i, to
+  ;; the regular vector w, starting at j.
+  (when (fxnegative? n)
+    (error "the number of entries to copy must be non-negative" n))
+  (let* ((i-first i)
+         (i-last (fx- (fx+ i n) 1))
+         (k-first (masked i-first))
+         (k-last (masked i-last))
+         (i-node-first (fx- i-first k-first))
+         (i-node-last (fx- i-last k-last)))
+    (if (fx=? i-node-first i-node-last)
+      (copy-from-leaf! w j (find-entry v i-node-first)
+                       k-first (fx+ k-last 1))
+      (begin
+        (copy-from-leaf! w j (find-entry v i-node-first)
+                         k-first (node-size))
+        (let loop ((i-node (fx+ i-node-first (node-size)))
+                   (j (fx+ j (fx- (node-size) k-first))))
+          (let ((leaf (find-entry v i-node)))
+            (if (fx=? i-node i-node-last)
+              (copy-from-leaf! w j leaf 0 (fx+ k-last 1))
+              (begin
+                (copy-from-leaf! w j leaf 0 (node-size))
+                (loop (fx+ i-node (node-size))
+                      (fx+ j (node-size)))))))))))
 
 ;;;-------------------------------------------------------------------
 ;;; local variables:
