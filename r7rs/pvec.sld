@@ -7,7 +7,7 @@
           pvec?
           pvec-length
           pvec-push
-          pvec-push-from-list
+          pvec-pushes ;; elements from list or generator.
           pvec-pop
           pvec-ref
           pvec-set
@@ -17,7 +17,9 @@
           (scheme case-lambda)
           (scheme write) ;; For debugging.
           (pvec define-record-factory)
-          (pvec srfi-42))
+          (pvec srfi-42)
+          (pvec srfi-42-generator))
+
   (cond-expand
     (chicken-5 (import (srfi 1)))
     ((library (scheme list)) (import (scheme list)))

@@ -3,7 +3,13 @@
 
 (define-library (pvec eager-comprehensions)
 
-  (export do-ec
+  (export do-ec #;pvec-ec
+
+          ;; Support for SRFI-158 generators.
+          :generator
+
+          ;; Symbols documented in SRFI-42.
+          do-ec
           list-ec
           append-ec
           string-ec
@@ -25,8 +31,9 @@
           ;; made to work with a Scheme’s module system, and making
           ;; dispatched generators work with a module system
           ;; introduces breakage. Dispatched generators are
-          ;; unnecessary, anyway, they are a lot of code to maintain,
-          ;; and they impact performance and documentation.
+          ;; unnecessary, anyway. They are a lot of code to maintain,
+          ;; they impact performance and documentation, and we can use
+          ;; SRFI-158 generators instead.
           :list
           :string
           :vector
@@ -47,6 +54,7 @@
   (import (scheme r5rs))
   (import (pvec))
   (import (pvec srfi-42))
+  (import (pvec srfi-42-generator))
 
   (begin
 

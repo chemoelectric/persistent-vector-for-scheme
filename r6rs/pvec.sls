@@ -8,6 +8,7 @@
           pvec?
           pvec-length
           pvec-push
+          pvec-pushes ;; elements from list or generator.
           pvec-pop
           pvec-ref
           pvec-set
@@ -27,6 +28,7 @@
           (srfi :143 fixnums)
           (pvec define-record-factory)
           (pvec srfi-42)
+          (pvec srfi-42-generator)
           (pvec pvec-include))
 
   (include "common/pvec/pvec-implementation.scm")

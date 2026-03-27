@@ -4,7 +4,13 @@
 
 (library (pvec eager-comprehensions)
 
-  (export do-ec
+  (export do-ec #;pvec-ec
+
+          ;; Support for SRFI-158 generators.
+          :generator
+
+          ;; Symbols documented in SRFI-42.
+          do-ec
           list-ec
           append-ec
           string-ec
@@ -50,6 +56,7 @@
           (srfi :23 error)
           (pvec)
           (pvec srfi-42)
+          (pvec srfi-42-generator)
           (pvec pvec-include))          
 
   (include "common/pvec/eager-comprehensions-implementation.scm")

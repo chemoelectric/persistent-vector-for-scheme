@@ -147,9 +147,55 @@
              (let ((new-tail (leaf-copy-set tail n-tail x)))
                (construct-pvec new-length shift node new-tail)))))))
     ((v . x*)
-     (pvec-push-from-list v x*))))
+     (let* ((p x*)
+            (gen! (lambda ()
+                    (if (pair? p)
+                      (let-values (((hd tl) (car+cdr p)))
+                        (set! p tl)
+                        hd)
+                      (eof-object)))))
+       (pvec-pushes v gen!)))))
 
-(define (pvec-push-from-list v x*)
+(define (generate-at-most! n gen!)
+  (if (fxpositive? n)
+    (let ((i n))
+      (list-ec (:until (:generator elem gen!)
+                       (begin
+                         (set! i (fx- i 1))
+                         (fxzero? i)))
+        elem))
+    '()))
+
+(define (pvec-pushes v source)
+  (cond
+    ((pair? source)
+     (pvec-pushes-from-list v source))
+    ((procedure? source)
+     (pvec-pushes-from-generator v source))
+    (else
+     (error "pvec-pushes cannot use this source" source))))
+
+(define (pvec-pushes-from-generator v gen!)
+  (let ((len (pvec-length v))
+        (maxlen (* 4 (node-size))))
+    (if (fxzero? len)
+      (let* ((maxlen (* 4 (node-size)))
+             (lst (generate-at-most! maxlen gen!))
+             (n (length lst))
+             (v (list->pvec lst)))
+        (if (fx<? n maxlen)
+          v
+          (pvec-pushes-from-generator v gen!)))
+      (let* ((n-tail (tail-length len))
+             (n-fill (fx- (node-size) n-tail))
+             (lst (generate-at-most! maxlen gen!))
+             (n (length lst))
+             (v (pvec-pushes-from-list v lst)))
+        (if (fx<? n maxlen)
+          v
+          (pvec-pushes-from-generator v gen!))))))
+  
+(define (pvec-pushes-from-list v x*)
   ;; NOTE: This implementation pushes nodes into the trie one at a
   ;; time, producing a complete trie again and again, until the data
   ;; to be pushed is used up. It might be better to write something
