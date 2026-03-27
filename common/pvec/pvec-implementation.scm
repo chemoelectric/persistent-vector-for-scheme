@@ -76,7 +76,7 @@
          (vector-set! w j (vector-ref leaf k))
          (loop (fx+ k 1) (fx+ j 1)))))))
 
-(define-syntax copy-to-leaf! ;;;;;;;; FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME
+(define-syntax copy-to-leaf!
   (syntax-rules ()
     ((¶ leaf k0 k1 w j)
      (let ()
@@ -86,16 +86,7 @@
            (vector-set! leaf k (vector-ref w j))
            (loop (fx+ k 1) (fx+ j 1))))))))
 
-(define-syntax new-leaf-copied-to ;;;;;;;; FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME
-  (syntax-rules ()
-    ((¶ w j n)
-     (let ((leaf (make-leaf-node)))
-       (copy-to-leaf! leaf 0 n w j)
-       leaf))
-    ((¶ w j)
-     (new-leaf-copied-to w j (node-size)))))
-
-(define-syntax leaf-copy-copied-to ;;;;;;;; FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME
+(define-syntax leaf-copy-copied-to
   (syntax-rules ()
     ((¶ leaf k0 k1 w j)
      (let ((leaf (vector-copy leaf)))
@@ -628,6 +619,92 @@
                 (copy-from-leaf! w j leaf 0 (node-size))
                 (loop (fx+ i-node (node-size))
                       (fx+ j (node-size)))))))))))
+
+(define pvec-sets
+  ;; Set multiple entries of the persistent vector v, starting at i,
+  ;; from entries in the regular vector x.
+  (case-lambda
+    ((v i x)
+     (pvec-sets v i x 0 (vector-length x)))
+    ((v i x start)
+     (pvec-sets v i x start (fx- (vector-length x) start)))
+    ((v i x start n)
+     (copy-to-pvec v i x start n))))
+
+(define (copy-to-pvec v i w j n)
+  ;; Copy n entries to the persistent vector v, starting at i, from
+  ;; the regular vector w, starting at j.
+  (when (fxnegative? n)
+    (error "the number of entries to copy must be non-negative" n))
+  (let* ((len (pvec-length v))
+         (shift (pvec-shift v))
+         (node (pvec-node v))
+         (tail (pvec-tail v))
+         (n-tail (tail-length len))
+         (n-body (fx- len n-tail))
+         (i-first i)
+         (i-last (fx- (fx+ i n) 1))
+         (k-first (masked i-first))
+         (k-last (masked i-last))
+         (i-node-first (fx- i-first k-first))
+         (i-node-last (fx- i-last k-last)))
+    (when (or (fxnegative? i-node-first)
+              (fx<=? len i-node-last))
+      (error "indexing out of range" v i n))
+    (cond
+      ((fx<=? n-body i-node-first)
+       ;; The entire contents to be copied is in the tail.
+       (construct-pvec len shift node
+                       (leaf-copy-copied-to
+                        tail k-first (fx+ k-last 1) w j)))
+      ((fx=? i-node-first i-node-last)
+       ;; The entire contents to be copied is in one leaf node.
+       (construct-pvec len shift
+                       (replace-leaf-copied-to
+                        shift node i-node-first k-first
+                        (fx+ k-last 1) w j)
+                       tail))
+      (else
+       (let*-values
+           (;; Set the first new leaf.
+            ((node) (replace-leaf-copied-to
+                     shift node i-node-first k-first
+                     node-size w j))
+            ((j) (fx+ j (fx- node-size k-first)))
+            ;;
+            ;; Set the other new leaves except the final one.
+            ((node j)
+             (let loop ((i-node (fx+ i-node-first node-size))
+                        (node node)
+                        (j j))
+               (if (fx=? i-node i-node-last)
+                 (values node j)
+                 (loop (fx+ i-node node-size)
+                       (replace-leaf-copied-to shift node i-node
+                                               0 node-size w j)
+                       (fx+ j node-size)))))
+            ;;
+            ;; Set the final leaf.
+            ((node tail)
+             (cond
+               ((fx<=? n-body i-node-last)
+                ;; The final leaf is the tail.
+                (values node (leaf-copy-copied-to
+                              tail 0 (fx+ k-last 1) w j)))
+               (else
+                ;; The final leaf is in the trie.
+                (values (replace-leaf-copied-to
+                         shift node i-node-last 0
+                         (fx+ k-last 1) w j)
+                        tail)))))
+         ;;
+         ;; And return the new persistent vector.
+         (construct-pvec len shift node tail))))))
+
+(define (replace-leaf-copied-to shift node i k0 k1 w j)
+  (let ((make-new-leaf (lambda (leaf)
+                         (leaf-copy-copied-to leaf k0 k1 w j))))
+    (replace-leaf shift node i make-new-leaf)))
 
 ;;;-------------------------------------------------------------------
 ;;; local variables:

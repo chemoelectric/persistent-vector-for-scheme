@@ -11,7 +11,8 @@
           pvec-pop
           pvec-ref
           pvec-set
-          pvec-refs
+          pvec-refs ;; Return elements as vector.
+          pvec-sets ;; Set elements from vector.
           list->pvec
           pvec->list
           pvec->vector
