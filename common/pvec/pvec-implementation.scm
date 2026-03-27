@@ -285,7 +285,7 @@
     (move-leaf-into-trie trie-length shift node leaf)))
 
 (define (new-leaf-into-trie trie-length shift node x*)
-  (let ((leaf (make-new-leaf))
+  (let ((leaf (make-leaf-node))
         (i 0))
     (do-ec (:list x x*)
       (begin
