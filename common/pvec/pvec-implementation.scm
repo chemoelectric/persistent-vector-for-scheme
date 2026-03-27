@@ -240,10 +240,9 @@
                 ;;
                 ;; Fill the old tail with initial regular-vector
                 ;; entries, and move the filled node to the trie.
-                ((shift node)
+                ((shift node x*)
                  (copy-leaf-into-trie (fx- len n-tail) shift node
                                       tail n-tail x*))
-                ((x*) (drop x* (fx- (node-size) n-tail)))
                 ;;
                 ;; Push the middle regular-vector entries to the trie.
                 ((trie-size) (fx+ (fx- len n-tail) (node-size)))
@@ -255,10 +254,9 @@
                    (if (fx=? j n-middle)
                      (values shift node x*)
                      (let*-values
-                         (((shift node)
+                         (((shift node x*)
                            (new-leaf-into-trie (fx+ trie-size j)
-                                               shift node x*))
-                          ((x*) (drop x* (node-size))))
+                                               shift node x*)))
                        (loop (fx+ j (node-size)) shift node x*)))))
                 ;;
                 ;; Fill in the new tail from the final
@@ -279,19 +277,27 @@
   (let ((leaf (vector-copy tail)))
     (let loop ((i n-tail)
                (p x*))
-      (unless (fx=? i (node-size))
-        (vector-set! leaf i (car p))
-        (loop (fx+ i 1) (cdr p)))
-      (move-leaf-into-trie trie-length shift node leaf))))
+      (if (fx=? i (node-size))
+        (let-values
+            (((new-shift new-node)
+              (move-leaf-into-trie trie-length shift node leaf)))
+          (values new-shift new-node p))
+        (begin
+          (vector-set! leaf i (car p))
+          (loop (fx+ i 1) (cdr p)))))))
 
 (define (new-leaf-into-trie trie-length shift node x*)
   (let ((leaf (make-leaf-node)))
     (let loop ((i 0)
                (p x*))
-      (unless (fx=? i (node-size))
-        (vector-set! leaf i (car p))
-        (loop (fx+ i 1) (cdr p)))
-      (move-leaf-into-trie trie-length shift node leaf))))
+      (if (fx=? i (node-size))
+        (let-values
+            (((new-shift new-node)
+              (move-leaf-into-trie trie-length shift node leaf)))
+          (values new-shift new-node p))
+        (begin
+          (vector-set! leaf i (car p))
+          (loop (fx+ i 1) (cdr p)))))))
 
 (define (move-leaf-into-trie trie-length shift node leaf)
   (cond
