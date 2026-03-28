@@ -14,6 +14,12 @@ m4_changequote(“,”)m4_changecom“”m4_dnl
   ((library (srfi 1)) (import (srfi 1)))
   (loko (import (srfi :1 lists)))
   (else (import (srfi srfi-1))))
+(cond-expand
+  (chicken-5 (import (srfi 158)))
+  ((library (scheme generator)) (import (scheme generator)))
+  ((library (srfi 158)) (import (srfi 158)))
+  (loko (import (srfi :158 generators-and-accumulators)))
+  (else (import (srfi srfi-158))))
 
 m4_include(“tests/tests-common.scm”)
 m4_include(“tests/test-pvec-implementation.scm”)
