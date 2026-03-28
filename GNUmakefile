@@ -187,19 +187,6 @@ check-chicken-6-r7rs: chicken-6/pvec.so $(R7RS_TESTS)
 	  $(CSI_6) -s $(TSTPVEC_R7RS) \
 	)
 
-# # At the time of this writing, Gambit did not support R⁷RS
-# # syntax-rules, nor could it export macros properly for R⁷RS. What
-# # Gambit does have for syntax-rules is an ancient version of
-# # syntax-case that accepts only trailing ellipses. However, Gambit
-# # code can be among the fastest Scheme code, and compiled separately,
-# # and so Gambit seems worth supporting.
-# .PHONY: check-gambit-gsi-r7rs
-# check-gambit-gsi-r7rs:
-# 	$(call v,CHECK)( \
-# 	  cd gambit && \
-# 	  $(GSI) -:r7rs,search=. ../tests/test-pvec-gambit-gsi.scm \
-# 	)
-
 .PHONY: check-gauche-r7rs
 check-gauche-r7rs: $(R7RS_DEPS) $(R7RS_TESTS)
 	$(call check-gauche-r7rs, $(TSTPVEC_R7RS))
