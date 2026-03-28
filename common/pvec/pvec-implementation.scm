@@ -155,30 +155,16 @@
   (constructor>
    vector->pvec
    (lambda (construct)
-     (let ((make-generator
-            (lambda (vec start end)
-              (let ((i start))
-                (lambda ()
-                  (if (fx=? i end)
-                    (eof-object)
-                    (let ((elem (vector-ref vec i)))
-                      (set! i (fx+ i 1))
-                      elem)))))))
-       (case-lambda
-         ((vec)
-          (let ((len (vector-length vec)))
-            (pvec-pushes (construct 0 0 #f #f)
-                         (make-generator vec 0 len))))
-         ((vec start)
-          (let ((len (vector-length vec)))
-            (check-indexes vec start len)
-            (pvec-pushes (construct 0 0 #f #f)
-                         (make-generator vec start len))))
-         ((vec start end)
-          (let ((len (vector-length vec)))
-            (check-indexes vec start end len)
-            (pvec-pushes (construct 0 0 #f #f)
-                         (make-generator vec start end))))))))
+     (case-lambda
+       ((vec)
+        (let ((len (vector-length vec)))
+          (pvec-pushes (construct 0 0 #f #f) vec)))
+       ((vec start)
+        (let ((len (vector-length vec)))
+          (pvec-pushes (construct 0 0 #f #f) vec start)))
+       ((vec start end)
+        (let ((len (vector-length vec)))
+          (pvec-pushes (construct 0 0 #f #f) vec start end))))))
 
   (constructor>
    generator->pvec
@@ -247,14 +233,46 @@
         elem))
     '()))
 
-(define (pvec-pushes v source)
-  (cond
-    ((pair? source)
-     (pvec-pushes-from-list v source))
-    ((procedure? source)
-     (pvec-pushes-from-generator v source))
-    (else
-     (error "pvec-pushes cannot use this source" source))))
+(define pvec-pushes
+  (let ((bad-source-message "pvec-pushes cannot use this source"))
+    (case-lambda
+      ((v source)
+       (cond
+         ((pair? source)
+          (pvec-pushes-from-list v source))
+         ((procedure? source)
+          (pvec-pushes-from-generator v source))
+         ((vector? source)
+          (let ((gen! (make-vector-generator
+                       source 0 (vector-length source))))
+            (pvec-pushes-from-generator v gen!)))
+         (else
+          (error bad-source-message source))))
+      ((v source start)
+       (cond
+         ((vector? source)
+          (let ((gen! (make-vector-generator
+                       source start (vector-length source))))
+            (pvec-pushes-from-generator v gen!)))
+         (else
+          (error bad-source-message source))))
+      ((v source start end)
+       (cond
+         ((vector? source)
+          (let ((gen! (make-vector-generator source start end)))
+            (pvec-pushes-from-generator v gen!)))
+         (else
+          (error bad-source-message source)))))))
+
+(define (make-vector-generator vec start end)
+  (check-indexes vec start end (vector-length vec))
+  (let ((i start))
+    (lambda ()
+      (if (fx=? i end)
+        (eof-object)
+        (let ((elem (vector-ref vec i)))
+          (set! i (fx+ i 1))
+          elem)))))
 
 (define (pvec-pushes-from-generator v gen!)
   (let ((len (pvec-length v))

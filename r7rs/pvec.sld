@@ -16,7 +16,7 @@
           pvec-length
 
           pvec-push
-          pvec-pushes ;; elements from list or generator.
+          pvec-pushes ;; elements from list, vector, generator.
 
           pvec-pop
 
