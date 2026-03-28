@@ -26,7 +26,8 @@
 
           pvec-refs ;; Return elements as vector.
           pvec-sets ;; Set elements from vector.
-          )
+
+          pvec-fold)
 
   (import (except (rnrs base (6))
                   error

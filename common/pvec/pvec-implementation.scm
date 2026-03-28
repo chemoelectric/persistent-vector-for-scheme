@@ -776,6 +776,22 @@
                          (leaf-copy-copied-to leaf k0 k1 w j))))
     (replace-leaf shift node i make-new-leaf)))
 
+(define pvec-fold
+  (case-lambda
+    ((kons knil v)
+     (let ((gen! (pvec->generator v)))
+       (fold-ec knil (:generator x gen!) x kons)))
+    ((kons knil . v*)
+     (let* ((gen* (map pvec->generator v*))
+            (gen! (lambda ()
+                    (let ((x* (map (lambda (g!) (g!)) gen*)))
+                      (if (any eof-object? x*)
+                        (eof-object)
+                        x*)))))
+       (fold-ec knil (:generator x* gen!) x*
+                (lambda (t* seed)
+                  (apply kons (append t* (list seed)))))))))
+
 ;;;-------------------------------------------------------------------
 ;;; local variables:
 ;;; mode: scheme
