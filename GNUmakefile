@@ -189,7 +189,7 @@ check-chibi-r7rs: $(R7RS_DEPS) $(R7RS_TESTS)
 # 	  $(CSI_5) -s $(TSTPROG2_R7RS) \
 # 	)
 
-check-chicken-6-r7rs: chicken-6/pvec.so
+check-chicken-6-r7rs: chicken-6/pvec.so $(R7RS_TESTS)
 	$(call v,CHECK)( \
 	  export CHICKEN_REPOSITORY_PATH=$${PWD}/chicken-6:$(CHICKEN_6_REPOSITORY_PATH); \
 	  $(CSI_6) -s $(TSTPVEC_R7RS) \
