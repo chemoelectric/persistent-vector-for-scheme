@@ -779,8 +779,8 @@
 (define pvec-fold
   (case-lambda
     ((kons knil v)
-     (let ((gen! (pvec->generator v)))
-       (fold-ec knil (:generator x gen!) x kons)))
+     (let ((len (pvec-length v)))
+       (fold-ec knil (:range i len) (pvec-ref v i) kons)))
     ((kons knil . v*)
      (let* ((gen* (map pvec->generator v*))
             (gen! (lambda ()
@@ -790,7 +790,7 @@
                         x*)))))
        (fold-ec knil (:generator x* gen!) x*
                 (lambda (t* seed)
-                  (apply kons (append t* (list seed)))))))))
+                  (apply kons (append! t* (list seed)))))))))
 
 ;;;-------------------------------------------------------------------
 ;;; local variables:
