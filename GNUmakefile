@@ -15,6 +15,12 @@ DEFAULT_VERBOSITY = 0
 # GNU or OpenBSD m4.
 GNULIKE_M4 = m4 -P -I $(PWD)
 
+# OpenBSD doas is simpler than sudo, is easily made a static
+# executable if you do not need it to use PAM, and doas will work
+# here. Incidentally, there is also a shim to make doas your
+# mostly-compatible ‘sudo’ command.
+SUDO = doas
+
 TAR = tar
 XZ = xz
 
@@ -211,37 +217,16 @@ check-chicken-6-r7rs: chicken-6/pvec.so $(R7RS_TESTS)
 check-gauche-r7rs: $(R7RS_DEPS) $(R7RS_TESTS)
 	$(call check-gauche-r7rs, $(TSTPVEC_R7RS))
 
-# .PHONY: install-gauche uninstall-gauche
-# install-gauche: r7rs/pvec.sld \
-# 		r7rs/pvec/define-record-factory.sld \
-# 		r7rs/pvec/eager-comprehensions.sld \
-# 		r7rs/pvec/pvec-structure.sld \
-# 		r7rs/pvec/low-level.sld \
-# 		common/pvec/eager-comprehensions-implementation.scm \
-# 		common/pvec/ec.scm \
-# 		common/pvec/pvec-structure-implementation.scm \
-# 		common/pvec/low-level-implementation.scm
-# 	$(call v,COPY)mkdir -p $(GAUCHE_INSTALLDIR)/{pvec,common/pvec} && \
-# 	cp r7rs/pvec.sld $(GAUCHE_INSTALLDIR) && \
-# 	cp r7rs/pvec/define-record-factory.sld \
-# 	   r7rs/pvec/eager-comprehensions.sld \
-# 	   r7rs/pvec/pvec-structure.sld \
-# 	   r7rs/pvec/low-level.sld $(GAUCHE_INSTALLDIR)/pvec && \
-# 	cp common/pvec/eager-comprehensions-implementation.scm \
-# 	   common/pvec/ec.scm \
-# 	   common/pvec/pvec-structure-implementation.scm \
-# 	   common/pvec/low-level-implementation.scm \
-# 	   $(GAUCHE_INSTALLDIR)/common/pvec
-# uninstall-gauche:
-# 	-rm -f	$(GAUCHE_INSTALLDIR)/pvec.sld \
-# 		$(GAUCHE_INSTALLDIR)/pvec/define-record-factory.sld \
-# 		$(GAUCHE_INSTALLDIR)/pvec/eager-comprehensions.sld \
-# 		$(GAUCHE_INSTALLDIR)/pvec/pvec-structure.sld \
-# 		$(GAUCHE_INSTALLDIR)/pvec/low-level.sld \
-# 		$(GAUCHE_INSTALLDIR)/common/pvec/eager-comprehensions-implementation.scm \
-# 		$(GAUCHE_INSTALLDIR)/common/pvec/ec.scm \
-# 		$(GAUCHE_INSTALLDIR)/common/pvec/pvec-structure-implementation.scm \
-# 		$(GAUCHE_INSTALLDIR)/common/pvec/low-level-implementation.scm
+.PHONY: install-gauche uninstall-gauche
+install-gauche: $(R7RS_DEPS)
+	$(call v,COPY)$(SUDO) mkdir -p $(GAUCHE_INSTALLDIR)/pvec && \
+	for f in $(R7RS_DEPS:r7rs/%=%); do \
+	  $(SUDO) rm -f $(GAUCHE_INSTALLDIR)/$${f} && \
+	  $(SUDO) cp {r7rs,$(GAUCHE_INSTALLDIR)}/$${f}; \
+	done
+uninstall-gauche:
+	-for f in $(R7RS_DEPS:r7rs/%=%); do $(SUDO) rm -f $(GAUCHE_INSTALLDIR)/$${f}; done
+	-$(SUDO) rmdir $(GAUCHE_INSTALLDIR)/pvec || true
 
 # To test with Loko Scheme one must install SRFI software, such as
 # chez-srfi. The R⁶RS libraries can be imported into R⁷RS software.
