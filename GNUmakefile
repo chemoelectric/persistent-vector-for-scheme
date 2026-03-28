@@ -182,12 +182,11 @@ check-chibi-r7rs: $(R7RS_DEPS) $(R7RS_TESTS)
 	$(call check-chibi-r7rs, $(TSTPVEC_R7RS))
 
 .PHONY: check-chicken-5-r7rs check-chicken-6-r7rs
-# check-chicken-5-r7rs: chicken-5/pvec.so
-# 	$(call v,CHECK)( \
-# 	  export CHICKEN_REPOSITORY_PATH=$${PWD}/chicken-5:$(CHICKEN_5_REPOSITORY_PATH); \
-# 	  $(CSI_5) -s $(TSTPROG1_R7RS); \
-# 	  $(CSI_5) -s $(TSTPROG2_R7RS) \
-# 	)
+ check-chicken-5-r7rs: chicken-5/pvec.so $(R7RS_TESTS)
+	$(call v,CHECK)( \
+	  export CHICKEN_REPOSITORY_PATH=$${PWD}/chicken-5:$(CHICKEN_5_REPOSITORY_PATH); \
+	  $(CSI_5) -s $(TSTPVEC_R7RS); \
+	)
 
 check-chicken-6-r7rs: chicken-6/pvec.so $(R7RS_TESTS)
 	$(call v,CHECK)( \
@@ -261,114 +260,97 @@ check-sagittarius-r7rs: $(R7RS_DEPS) $(R7RS_TESTS)
 clean::
 	-rm -f *.log
 
-# #---------------------------------------------------------------------
-# #
-# # CHICKEN 5 egg.
-# #
-# 
-# EGG_5_VERSION = $(VERSION)
-# 
-# CSI_5 = csi
-# CHICKEN_INSTALL_5 = chicken-install
-# CHICKEN_UNINSTALL_5 = chicken-uninstall
-# 
-# CHICKEN_5_REPOSITORY_PATH = $(shell $(CHICKEN_INSTALL_5) -repository)
-# 
-# chicken-5/README.adoc: README.adoc
-# 	$(call v,COPY)mkdir -p $(@D) && \
-# 	rm -f $(@) && \
-# 	cp $(<) $(@)
-# 
-# chicken-5/%.sld: r7rs/%.sld
-# 	$(call v,AWK)mkdir -p $(@D) && \
-# 	rm -f $(@) && \
-# 	awk '/^#!r7rs/{next}{print}' < $(<) > $(@)
-# 
-# chicken-5/common/%.scm: common/%.scm
-# 	$(call v,AWK)mkdir -p $(@D) && \
-# 	rm -f $(@) && \
-# 	awk '/^#!r7rs/{next}{print}' < $(<) > $(@)
-# 
-# chicken-5/pvec.egg: GNUmakefile \
-# 	$(addprefix chicken-5/, \
-# 		README.adoc \
-# 		pvec/eager-comprehensions.sld \
-# 		pvec.sld \
-# 		pvec/pvec-structure.sld \
-# 		pvec/low-level.sld \
-# 		common/pvec/eager-comprehensions-implementation.scm \
-# 		common/pvec/pvec-structure-implementation.scm \
-# 		common/pvec/low-level-implementation.scm)
-# 	$(call v,AWK)mkdir -p chicken-5 && \
-# 	awk 'BEGIN { \
-# 	  print "((synopsis \"Hashmaps (hash array mapped tries)\")"; \
-# 	  print " (version \"$(EGG_5_VERSION)\")"; \
-# 	  print " (category data)"; \
-# 	  print " (license \"MIT\")"; \
-# 	  print " (author \"Barry Schwartz\")"; \
-# 	  print " (dependencies r7rs srfi-1 srfi-42 srfi-128 srfi-143)"; \
-# 	  print " (component-options"; \
-# 	  print "  (csc-options \"-X\" \"r7rs\" \"-R\" \"r7rs\" \"-O3\""; \
-# 	  print "               \"-C\" \"-O3\""; \
-# 	  print "               ))"; \
-# 	  print " (components"; \
-# 	  print "  (extension pvec.low-level"; \
-# 	  print "   (source \"pvec/low-level.sld\")"; \
-# 	  print "   (source-dependencies \"common/pvec/low-level-implementation.scm\"))"; \
-# 	  print "  (extension pvec.define-record-factory"; \
-# 	  print "   (source \"pvec.define-record-factory.scm\"))"; \
-# 	  print "  (extension pvec.pvec-structure"; \
-# 	  print "   (source \"pvec/pvec-structure.sld\")"; \
-# 	  print "   (component-dependencies pvec.define-record-factory)"; \
-# 	  print "   (component-dependencies pvec.low-level)"; \
-# 	  print "   (source-dependencies \"common/pvec/pvec-structure-implementation.scm\"))"; \
-# 	  print "  (extension pvec"; \
-# 	  print "   (source \"pvec.sld\")"; \
-# 	  print "   (component-dependencies pvec.pvec-structure))"; \
-# 	  print "  (extension pvec.eager-comprehensions"; \
-# 	  print "   (source \"pvec/eager-comprehensions.sld\")"; \
-# 	  print "   (component-dependencies pvec)"; \
-# 	  print "   (source-dependencies \"common/pvec/eager-comprehensions-implementation.scm\"))"; \
-# 	  print "   ))"; \
-# 	}' > $(@)
-# 
-# chicken-5/pvec.so: chicken-5/pvec.egg \
-# 	                chicken-5/pvec.define-record-factory.scm
-# 	$(call v,CHICKEN-INSTALL-5)( \
-# 	  cd chicken-5 && \
-# 	  $(CHICKEN_INSTALL_5) -n \
-# 	)
-# 
-# pvec-$(EGG_5_VERSION).chicken-5-egg.tar.xz: clean-chicken-5
-# 	$(MAKE) $(MAKEFLAGS) chicken-5/pvec.egg
-# 	$(TAR) -cf - chicken-5 | $(XZ) > $@
-# 
-# .PHONY: install-chicken-5-egg uninstall-chicken-5-egg
-# install-chicken-5-egg: chicken-5/pvec.egg
-# 	$(call v,CHICKEN-INSTALL-5)( \
-# 	  cd chicken-5 && \
-# 	  $(CHICKEN_INSTALL_5) -s \
-# 	)
-# uninstall-chicken-5-egg: chicken-5/pvec.egg
-# 	$(call v,CHICKEN-UNINSTALL-5)( \
-# 	  cd chicken-5 && \
-# 	  $(CHICKEN_UNINSTALL_5) -force -s pvec \
-# 	)
-# 
-# clean-chicken-5:
-# 	-rm -Rf chicken-5/pvec chicken-5/common
-# 	-rm -f chicken-5/README.adoc
-# 	-rm -f chicken-5/pvec.sld
-# 	-rm -f chicken-5/pvec.build.sh
-# 	-rm -f chicken-5/pvec.install.sh
-# 	-rm -f chicken-5/pvec.egg
-# 	-rm -f chicken-5/pvec*.so
-# 	-rm -f chicken-5/pvec*.o
-# 	-rm -f chicken-5/pvec*.link
-# 	-rm -f chicken-5/pvec*.import.*
-# 
-# clean:: clean-chicken-5
-# 
+#---------------------------------------------------------------------
+#
+# CHICKEN 5 egg.
+#
+
+EGG_5_VERSION = $(VERSION)
+
+CSI_5 = csi
+CHICKEN_INSTALL_5 = chicken-install
+CHICKEN_UNINSTALL_5 = chicken-uninstall
+
+CHICKEN_5_REPOSITORY_PATH = $(shell $(CHICKEN_INSTALL_5) -repository)
+
+chicken-5/README.adoc: README.adoc
+	$(call v,COPY)mkdir -p $(@D) && \
+	rm -f $(@) && \
+	cp $(<) $(@)
+
+chicken-5/%.sld: r7rs/%.sld
+	$(call v,AWK)mkdir -p $(@D) && \
+	rm -f $(@) && \
+	awk '/^#!r7rs/{next}{print}' < $(<) > $(@)
+
+chicken-5/common/%.scm: common/%.scm
+	$(call v,AWK)mkdir -p $(@D) && \
+	rm -f $(@) && \
+	awk '/^#!r7rs/{next}{print}' < $(<) > $(@)
+
+chicken-5/pvec.egg: GNUmakefile \
+	$(addprefix chicken-5/, \
+		README.adoc \
+		pvec/eager-comprehensions.sld pvec.sld \
+		pvec/srfi-42.sld pvec/srfi-42-generator.sld \
+		pvec/define-record-factory.sld)
+	$(call v,AWK)mkdir -p chicken-5 && \
+	awk 'BEGIN { \
+	  print "((synopsis \"Persistent vectors\")"; \
+	  print " (version \"$(EGG_5_VERSION)\")"; \
+	  print " (category data)"; \
+	  print " (license \"MIT\")"; \
+	  print " (author \"Barry Schwartz\")"; \
+	  print " (dependencies r7rs srfi-1 srfi-42 srfi-143)"; \
+	  print " (component-options"; \
+	  print "  (csc-options \"-X\" \"r7rs\" \"-R\" \"r7rs\" \"-O3\"))"; \
+	  print " (components"; \
+	  print "  (extension pvec.srfi-42"; \
+	  print "   (source \"pvec/srfi-42.sld\"))"; \
+	  print "  (extension pvec.srfi-42-generator"; \
+	  print "   (source \"pvec/srfi-42-generator.sld\"))"; \
+	  print "  (extension pvec.define-record-factory"; \
+	  print "   (source \"pvec/define-record-factory.sld\"))"; \
+	  print "  (extension pvec"; \
+	  print "   (source \"pvec.sld\")"; \
+	  print "   (component-dependencies"; \
+	  print "    pvec.srfi-42"; \
+	  print "    pvec.srfi-42-generator"; \
+	  print "    pvec.define-record-factory))"; \
+	  print "  (extension pvec.eager-comprehensions"; \
+	  print "   (source \"pvec/eager-comprehensions.sld\")"; \
+	  print "   (component-dependencies"; \
+	  print "    pvec pvec.srfi-42 pvec.srfi-42-generator))"; \
+	  print "   ))"; \
+	}' > $(@)
+
+chicken-5/pvec.so: chicken-5/pvec.egg
+	$(call v,CHICKEN-INSTALL-5)( \
+	  cd chicken-5 && \
+	  $(CHICKEN_INSTALL_5) -n \
+	)
+
+pvec-$(EGG_5_VERSION).chicken-5-egg.tar.xz: clean-chicken-5
+	$(MAKE) $(MAKEFLAGS) chicken-5/pvec.egg
+	$(TAR) -cf - chicken-5 | $(XZ) > $@
+
+.PHONY: install-chicken-5-egg uninstall-chicken-5-egg
+install-chicken-5-egg: chicken-5/pvec.egg
+	$(call v,CHICKEN-INSTALL-5)( \
+	  cd chicken-5 && \
+	  $(CHICKEN_INSTALL_5) -s \
+	)
+uninstall-chicken-5-egg: chicken-5/pvec.egg
+	$(call v,CHICKEN-UNINSTALL-5)( \
+	  cd chicken-5 && \
+	  $(CHICKEN_UNINSTALL_5) -force -s pvec \
+	)
+
+clean-chicken-5:
+	-rm -Rf chicken-5
+
+clean:: clean-chicken-5
+
 #---------------------------------------------------------------------
 #
 # CHICKEN 6 egg.
