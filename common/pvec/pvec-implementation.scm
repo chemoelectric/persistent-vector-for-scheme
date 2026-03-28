@@ -147,7 +147,8 @@
            ((fxzero? n) (construct 0 0 #f #f))
            ((fx<=? n (node-size))
             ;; Use just the first value returned by create-leaves.
-            (construct n 0 #f (create-leaves lst)))
+            (let-values (((tail _) (create-leaves lst)))
+              (construct n 0 #f tail)))
            (else
             (let*-values (((tail leaves) (create-leaves lst))
                           ((shift trie) (build-trie leaves)))
@@ -470,8 +471,8 @@
   (let* ((new-length (fx- len n))
          (n-new-tail (tail-length new-length))
          (n-new-trie (fx- new-length n-new-tail))
-         (new-tail (free-unused-objects (find-entry v n-new-trie)
-                                        n-new-tail)))
+         (new-tail (let-values (((leaf _) (find-entry v n-new-trie)))
+                     (free-unused-objects leaf n-new-tail))))
     (if (fx=? new-length n-new-tail)
       (construct-pvec new-length 0 #f new-tail) ;; No trie.
       (let ((i (fx- n-new-trie 1)))

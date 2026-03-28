@@ -8,8 +8,7 @@ m4_changequote(“,”)m4_changecom“”m4_dnl
   (export :generator)
 
   (import (except (rnrs (6)) error)
-          (pvec srfi-42)
-          (pvec pvec-include))
+          (pvec srfi-42))
 
   m4_include(“common/pvec/srfi-42-generator-implementation.scm”)
 

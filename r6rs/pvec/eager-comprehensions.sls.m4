@@ -1,3 +1,4 @@
+m4_changequote(“,”)m4_changecom“”m4_dnl
 #!r6rs
 ;; Copyright © 2026 Barry Schwartz
 ;; SPDX-License-Identifier: MIT
@@ -58,10 +59,9 @@
           (srfi :143 fixnums)
           (pvec)
           (pvec srfi-42)
-          (pvec srfi-42-generator)
-          (pvec pvec-include))          
+          (pvec srfi-42-generator))
 
-  (include "common/pvec/eager-comprehensions-implementation.scm")
+  m4_include(“common/pvec/eager-comprehensions-implementation.scm”)
 
   )
 

@@ -49,8 +49,7 @@ m4_changequote(“,”)m4_changecom“”m4_dnl
   ;; SRFI-42, we include the SRFI-42 reference sources.
   (import (except (rnrs (6)) error)
           (only (rnrs r5rs (6)) exact->inexact)
-          (srfi :23 error)
-          (pvec pvec-include))
+          (srfi :23 error))
 
   m4_include(“common/pvec/ec.scm”)
 

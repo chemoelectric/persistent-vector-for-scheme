@@ -7,7 +7,12 @@
 VERSION = 0.0.0
 
 CHEZSCHEME_INSTALLDIR = ~/.local/lib/chezscheme
+#CHEZ_SUDO = $(SUDO)
+CHEZ_SUDO =
+
 GAUCHE_INSTALLDIR = $(shell gauche-config --sitelibdir)
+GAUCHE_SUDO = $(SUDO)
+#GAUCHE_SUDO =
 
 include silent-rules.mk
 DEFAULT_VERBOSITY = 0
@@ -115,70 +120,52 @@ clean::
 check-chez-r6rs: $(R6RS_DEPS) $(R6RS_TESTS)
 	$(call check-chez-r6rs, $(TSTPVEC_R6RS))
 
-# %.so: %.sls
-# 	$(call v,CHEZ)echo '(generate-wpo-files #t)(compile-file "$(<)")' \
-# 	  | CHEZSCHEMELIBDIRS=$(PWD)/r6rs$${CHEZSCHEMELIBDIRS+:}$${CHEZSCHEMELIBDIRS} $(CHEZ) -q
-# 
-# chezscheme/%.sls: r6rs/%.sls
-# 	$(call v,AWK)mkdir -p $(@D) && \
-# 	rm -f $(@) && \
-# 	$(awk-r6rs) < $(<) > $(@)
-# 
-# chezscheme/pvec/pvec-structure.sls: \
-# 		common/pvec/pvec-structure-implementation.scm
-# chezscheme/pvec/low-level.sls: \
-# 		common/pvec/low-level-implementation.scm
-# chezscheme/pvec/eager-comprehensions.sls: \
-# 		common/pvec/eager-comprehensions-implementation.scm \
-# 		common/pvec/ec.scm
-# 
-# # Precompiled Chez Scheme.
-# chezscheme/pvec.so: \
-# 		chezscheme/pvec.sls \
-# 		chezscheme/pvec/pvec-structure.so
-# chezscheme/pvec/pvec-structure.so: \
-# 		chezscheme/pvec/pvec-structure.sls \
-# 		chezscheme/pvec/low-level.so \
-# 		chezscheme/pvec/define-record-factory.so
-# chezscheme/pvec/low-level.so: \
-# 		chezscheme/pvec/low-level.sls
-# chezscheme/pvec/define-record-factory.so: \
-# 		chezscheme/pvec/define-record-factory.sls
-# chezscheme/pvec/eager-comprehensions.so: \
-# 		chezscheme/pvec/eager-comprehensions.sls
-# 
-# 
-# .PHONY: install-chez uninstall-chez
-# install-chez:	chezscheme/pvec.sls chezscheme/pvec.so \
-# 		chezscheme/pvec/eager-comprehensions.sls \
-# 		chezscheme/pvec/eager-comprehensions.so \
-# 		chezscheme/pvec/define-record-factory.sls \
-# 		chezscheme/pvec/define-record-factory.so \
-# 		chezscheme/pvec/pvec-structure.sls \
-# 		chezscheme/pvec/pvec-structure.so \
-# 		chezscheme/pvec/low-level.sls \
-# 		chezscheme/pvec/low-level.so
-# 	for f in $(^:chezscheme/%=%) \
-# 	    $(patsubst %.so,%.wpo,$(filter %.so,$(^:chezscheme/%=%))); do \
-# 	  mkdir -p $(CHEZSCHEME_INSTALLDIR)/`dirname "$${f}"` && \
-# 	  rm -f $(CHEZSCHEME_INSTALLDIR)/"$${f}" && \
-# 	  cp chezscheme/"$${f}" $(CHEZSCHEME_INSTALLDIR)/"$${f}"; \
-# 	done
-# uninstall-chez:
-# 	rm -f	$(CHEZSCHEME_INSTALLDIR)/pvec.sls \
-# 		$(CHEZSCHEME_INSTALLDIR)/pvec.{so,wpo} \
-# 		$(CHEZSCHEME_INSTALLDIR)/pvec/eager-comprehensions.sls \
-# 		$(CHEZSCHEME_INSTALLDIR)/pvec/eager-comprehensions.{so,wpo} \
-# 		$(CHEZSCHEME_INSTALLDIR)/pvec/define-record-factory.sls \
-# 		$(CHEZSCHEME_INSTALLDIR)/pvec/define-record-factory.{so,wpo} \
-# 		$(CHEZSCHEME_INSTALLDIR)/pvec/pvec-structure.sls \
-# 		$(CHEZSCHEME_INSTALLDIR)/pvec/pvec-structure.{so,wpo} \
-# 		$(CHEZSCHEME_INSTALLDIR)/pvec/low-level.sls \
-# 		$(CHEZSCHEME_INSTALLDIR)/pvec/low-level.{so,wpo}
-# 	rmdir	$(CHEZSCHEME_INSTALLDIR)/pvec || true
-# 
-# clean::
-# 	-rm -Rf chezscheme
+chezscheme/%.sls: r6rs/%.sls
+	$(call v,CP)mkdir -p $(@D) && \
+	rm -f $(@) && \
+	cp $(<) $(@)
+
+%.so: %.sls
+	$(call v,CHEZ)echo '(generate-wpo-files #t)(compile-file "$(<)")' \
+	  | CHEZSCHEMELIBDIRS=$(PWD)/r6rs$${CHEZSCHEMELIBDIRS+:}$${CHEZSCHEMELIBDIRS} $(CHEZ) -q
+
+# Precompiled Chez Scheme.
+chezscheme/pvec/eager-comprehensions.so: \
+		chezscheme/pvec/eager-comprehensions.sls \
+		chezscheme/pvec.so \
+		chezscheme/pvec/srfi-42-generator.so \
+		chezscheme/pvec/srfi-42.so
+chezscheme/pvec.so: \
+		chezscheme/pvec.sls \
+		chezscheme/pvec/define-record-factory.so \
+		chezscheme/pvec/srfi-42-generator.so \
+		chezscheme/pvec/srfi-42.so
+chezscheme/pvec/define-record-factory.so: \
+		chezscheme/pvec/define-record-factory.sls
+chezscheme/pvec/srfi-42-generator.so: \
+		chezscheme/pvec/srfi-42-generator.sls \
+		chezscheme/pvec/srfi-42.so
+chezscheme/pvec/srfi-42.so: \
+		chezscheme/pvec/srfi-42.sls
+
+.PHONY: install-chez uninstall-chez
+install-chez:	$(R6RS_DEPS:r6rs/%.sls=chezscheme/%.sls) \
+		$(R6RS_DEPS:r6rs/%.sls=chezscheme/%.so)
+	$(CHEZ_SUDO) mkdir -p $(CHEZSCHEME_INSTALLDIR)/pvec && \
+	for f in $(R6RS_DEPS:r6rs/%.sls=%.sls) \
+		$(R6RS_DEPS:r6rs/%.sls=%.so) \
+		$(R6RS_DEPS:r6rs/%.sls=%.wpo); do \
+	  $(CHEZ_SUDO) rm -f $(CHEZSCHEME_INSTALLDIR)/"$${f}" && \
+	  $(CHEZ_SUDO) cp chezscheme/"$${f}" $(CHEZSCHEME_INSTALLDIR)/"$${f}"; \
+	done
+uninstall-chez:
+	-for f in $(R6RS_DEPS:r6rs/%.sls=%.sls); do $(CHEZ_SUDO) rm -f $(CHEZSCHEME_INSTALLDIR)/$${f}; done
+	-for f in $(R6RS_DEPS:r6rs/%.sls=%.so); do $(CHEZ_SUDO) rm -f $(CHEZSCHEME_INSTALLDIR)/$${f}; done
+	-for f in $(R6RS_DEPS:r6rs/%.sls=%.wpo); do $(CHEZ_SUDO) rm -f $(CHEZSCHEME_INSTALLDIR)/$${f}; done
+	-rmdir $(CHEZSCHEME_INSTALLDIR)/pvec || true
+
+clean::
+	-rm -Rf chezscheme
 
 # You may have to install some software with snow-chibi or by other
 # means. (Also, last I tried it, Chibi’s SRFI-1 was incomplete and
@@ -219,14 +206,14 @@ check-gauche-r7rs: $(R7RS_DEPS) $(R7RS_TESTS)
 
 .PHONY: install-gauche uninstall-gauche
 install-gauche: $(R7RS_DEPS)
-	$(call v,COPY)$(SUDO) mkdir -p $(GAUCHE_INSTALLDIR)/pvec && \
+	$(GAUCHE_SUDO) mkdir -p $(GAUCHE_INSTALLDIR)/pvec && \
 	for f in $(R7RS_DEPS:r7rs/%=%); do \
-	  $(SUDO) rm -f $(GAUCHE_INSTALLDIR)/$${f} && \
-	  $(SUDO) cp {r7rs,$(GAUCHE_INSTALLDIR)}/$${f}; \
+	  $(GAUCHE_SUDO) rm -f $(GAUCHE_INSTALLDIR)/$${f} && \
+	  $(GAUCHE_SUDO) cp {r7rs,$(GAUCHE_INSTALLDIR)}/$${f}; \
 	done
 uninstall-gauche:
-	-for f in $(R7RS_DEPS:r7rs/%=%); do $(SUDO) rm -f $(GAUCHE_INSTALLDIR)/$${f}; done
-	-$(SUDO) rmdir $(GAUCHE_INSTALLDIR)/pvec || true
+	-for f in $(R7RS_DEPS:r7rs/%=%); do $(GAUCHE_SUDO) rm -f $(GAUCHE_INSTALLDIR)/$${f}; done
+	-$(GAUCHE_SUDO) rmdir $(GAUCHE_INSTALLDIR)/pvec || true
 
 # To test with Loko Scheme one must install SRFI software, such as
 # chez-srfi. The R⁶RS libraries can be imported into R⁷RS software.

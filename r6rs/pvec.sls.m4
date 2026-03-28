@@ -44,8 +44,7 @@ m4_changequote(“,”)m4_changecom“”m4_dnl
           (srfi :143 fixnums)
           (pvec define-record-factory)
           (pvec srfi-42)
-          (pvec srfi-42-generator)
-          (pvec pvec-include))
+          (pvec srfi-42-generator))
 
   m4_include(“common/pvec/pvec-implementation.scm”)
 
