@@ -1,3 +1,4 @@
+m4_changequote(“,”)m4_changecom“”m4_dnl
 #!/usr/bin/env scheme-script
 ;; Copyright © 2026 Barry Schwartz
 ;; SPDX-License-Identifier: MIT
@@ -13,7 +14,8 @@
         (pvec)
         (pvec eager-comprehensions))
 
-(include "tests/test-pvec-implementation.scm")
+m4_include(“tests/tests-common.scm”)
+m4_include(“tests/test-pvec-implementation.scm”)
 
 ;;; local variables:
 ;;; mode: scheme

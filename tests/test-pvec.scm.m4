@@ -1,3 +1,4 @@
+m4_changequote(“,”)m4_changecom“”m4_dnl
 #!/usr/bin/env scheme-r7rs
 ;; Copyright © 2026 Barry Schwartz
 ;; SPDX-License-Identifier: MIT
@@ -14,7 +15,8 @@
   (loko (import (srfi :1 lists)))
   (else (import (srfi srfi-1))))
 
-(include "tests/test-pvec-implementation.scm")
+m4_include(“tests/tests-common.scm”)
+m4_include(“tests/test-pvec-implementation.scm”)
 
 ;;; local variables:
 ;;; mode: scheme

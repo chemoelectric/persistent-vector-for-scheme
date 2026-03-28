@@ -1,3 +1,4 @@
+m4_changequote(“,”)m4_changecom“”m4_dnl
 #!r6rs
 ;; Copyright © 2026 Barry Schwartz
 ;; SPDX-License-Identifier: MIT
@@ -51,7 +52,7 @@
           (srfi :23 error)
           (pvec pvec-include))
 
-  (include "common/pvec/ec.scm")
+  m4_include(“common/pvec/ec.scm”)
 
   )
 

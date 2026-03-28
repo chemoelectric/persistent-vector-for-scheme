@@ -1,3 +1,4 @@
+m4_changequote(“,”)m4_changecom“”m4_dnl
 #!r6rs
 ;; Copyright © 2026 Barry Schwartz
 ;; SPDX-License-Identifier: MIT
@@ -46,7 +47,7 @@
           (pvec srfi-42-generator)
           (pvec pvec-include))
 
-  (include "common/pvec/pvec-implementation.scm")
+  m4_include(“common/pvec/pvec-implementation.scm”)
 
   )
 

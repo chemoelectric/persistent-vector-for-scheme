@@ -1,3 +1,4 @@
+m4_changequote(“,”)m4_changecom“”m4_dnl
 ;; Copyright © 2026 Barry Schwartz
 ;; SPDX-License-Identifier: MIT
 
@@ -60,7 +61,7 @@
     (cond-expand
       ((or chibi chicken) (if #f #f))
       (else
-       (include "common/pvec/ec.scm")
+       m4_include(“common/pvec/ec.scm”)
        ))
 
     ))

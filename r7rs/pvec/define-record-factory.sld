@@ -6,80 +6,256 @@
   (export define-record-factory)
 
   (import (scheme base))
+  (cond-expand
+    (chicken-5
+     (import (only (chicken base) gensym)
+             (only (chicken syntax) er-macro-transformer)
+             (srfi 1)))
+    (else))
 
   (begin
 
-    (define-syntax define-record-factory
-      (syntax-rules ()
-        ((_ designation rule ...)
-         (begin
+    (cond-expand
 
-           (define-record-type designation
-             (original-constructor% fields)
-             predicate
-             (fields access))
+      (chicken-5
 
-           (begin
-             (define-syntax record-rule
-               (syntax-rules (constructor>
-                              predicate>
-                              getter> setter>)
+       (define-syntax define-record-factory
+         (er-macro-transformer
+          (lambda (form rename compare)
 
-                 ((_ constructor predicate access
-                     (constructor> name proc))
+            (define rn rename)
 
-                  (define name (proc constructor)))
+            (define (caddr x) (cadr (cdr x)))
+            (define (cadddr x) (cadr (cddr x)))
 
-                 ((_ constructor predicate access
-                     (constructor> name))
+            (define one-arg?
+              (lambda (rule*)
+                (and (pair? rule*)
+                     (list? (car rule*))
+                     (= (length (car rule*)) 2))))
 
-                  (define name constructor))
+            (define two-arg?
+              (lambda (rule*)
+                (and (pair? rule*)
+                     (list? (car rule*))
+                     (= (length (car rule*)) 3))))
 
-                 ((_ constructor predicate access
-                     (predicate> name proc))
+            (define three-arg?
+              (lambda (rule*)
+                (and (pair? rule*)
+                     (list? (car rule*))
+                     (= (length (car rule*)) 4))))
 
-                  (define name (proc predicate)))
+            (define arg1 (lambda (rule*) (cadr (car rule*))))
+            (define arg2 (lambda (rule*) (caddr (car rule*))))
+            (define arg3 (lambda (rule*) (cadddr (car rule*))))
 
-                 ((_ constructor predicate access
-                     (predicate> name))
+            (define (rule-match? symb)
+              (lambda (rule*)
+                (and (symbol? (caar rule*))
+                     (compare (caar rule*) (rn symb)))))
 
-                  (define name predicate))
+            (define constructor>? (rule-match? 'constructor>))
+            (define predicate>? (rule-match? 'predicate>))
+            (define getter>? (rule-match? 'getter>))
+            (define setter>? (rule-match? 'setter>))
 
-                 ((_ constructor predicate access
-                     (getter> i name proc))
+            (define define-record-type% (rn 'define-record-type))
+            (define define% (rn 'define))
+            (define lambda% (rn 'lambda))
+            (define begin% (rn 'begin))
+            (define vector-ref% (rn 'vector-ref))
+            (define vector-set!% (rn 'vector-set!))
+            (define list->vector% (rn 'list->vector))
+            (define minus% (rn '-))
 
-                  (define name
-                    (proc
-                     (lambda (obj)
-                       (vector-ref (access obj) (- i 1))))))
+            (define (error-in-rule rule*)
+              (error "syntax error in rule" (car rule*)))
 
-                 ((_ constructor predicate access
-                     (getter> i name))
+            (let ((n (length form)))
+              (cond
+                ((= n 1)
+                 (error "record type designation is missing" form))
+                ((not (symbol? (cadr form)))
+                 (error "record type designation is not a symbol"
+                        (cadr form)))
+                (else
+                 (let* ((designation (cadr form))
+                        (original-constructor% (gensym))
+                        (constructor% (gensym))
+                        (original-predicate% (gensym))
+                        (predicate% (gensym))
+                        (fields% (gensym))
+                        (access% (gensym)))
+                   (let loop ((code '())
+                              (rule* (cddr form)))
+                     (cond
+                       ((one-arg? rule*)
+                        (cond
+                          ((constructor>? rule*)
+                           (let* ((name (arg1 rule*))
+                                  (definition
+                                    `(,define% ,name ,constructor%)))
+                             (loop (cons definition code) (cdr rule*))))
+                          ((predicate>? rule*)
+                           (let* ((name (arg1 rule*))
+                                  (definition
+                                    `(,define% ,name ,predicate%)))
+                             (loop (cons definition code) (cdr rule*))))
+                          (else (error-in-rule rule*))))
+                       ((two-arg? rule*)
+                        (cond
+                          ((constructor>? rule*)
+                           (let* ((name (arg1 rule*))
+                                  (proc (arg2 rule*))
+                                  (definition
+                                    `(,define% ,name (,proc ,constructor%))))
+                             (loop (cons definition code) (cdr rule*))))
+                          ((predicate>? rule*)
+                           (let* ((name (arg1 rule*))
+                                  (proc (arg2 rule*))
+                                  (definition
+                                    `(,define% ,name (,proc ,predicate%))))
+                             (loop (cons definition code) (cdr rule*))))
+                          ((getter>? rule*)
+                           (let* ((i (arg1 rule*))
+                                  (name (arg2 rule*))
+                                  (definition
+                                    `(,define% ,name
+                                       (,lambda%
+                                        (obj)
+                                        (,vector-ref% (,access% obj)
+                                                      (,minus% ,i 1))))))
+                             (loop (cons definition code) (cdr rule*))))
+                          ((setter>? rule*)
+                           (let* ((i (arg1 rule*))
+                                  (name (arg2 rule*))
+                                  (definition
+                                    `(,define% ,name
+                                       (,lambda%
+                                        (obj value)
+                                        (,vector-set!% (,access% obj)
+                                                       (,minus% ,i 1)
+                                                       value)))))
+                             (loop (cons definition code) (cdr rule*))))
+                          (else (error-in-rule rule*))))
+                       ((three-arg? rule*)
+                        (cond
+                          ((getter>? rule*)
+                           (let* ((i (arg1 rule*))
+                                  (name (arg2 rule*))
+                                  (proc (arg3 rule*))
+                                  (definition
+                                    `(,define% ,name
+                                       (,proc
+                                        (,lambda%
+                                         (obj)
+                                         (,vector-ref% (,access% obj)
+                                                       (,minus% ,i 1)))))))
+                             (loop (cons definition code) (cdr rule*))))
+                          ((setter>? rule*)
+                           (let* ((i (arg1 rule*))
+                                  (name (arg2 rule*))
+                                  (proc (arg3 rule*))
+                                  (definition
+                                    `(,define% ,name
+                                       (,proc
+                                        (,lambda%
+                                         (obj value)
+                                         (,vector-set!% (,access% obj)
+                                                        (,minus% ,i 1)
+                                                        value))))))
+                             (loop (cons definition code) (cdr rule*))))
+                          (else (error-in-rule rule*))))
+                       (else
+                        (let ((heading
+                               `(,begin%
+                                 (,define-record-type% ,designation
+                                   (,original-constructor% ,fields%)
+                                   ,original-predicate%
+                                   (,fields% ,access%))
+                                 (,define% (,constructor% . obj)
+                                   (,original-constructor%
+                                    (,list->vector% obj)))
+                                 (,define% (,predicate% obj)
+                                   (,original-predicate% obj)))))
+                          (append heading (reverse code)))))))))))))
+       )
 
-                  (define name
-                    (lambda (obj)
-                      (vector-ref (access obj) (- i 1)))))
+      (else
+       
+       (define-syntax define-record-factory
+         (syntax-rules ()
+           ((_ designation rule ...)
+            (begin
 
-                 ((_ constructor predicate access
-                     (setter> i name proc))
+              (define-record-type designation
+                (original-constructor% fields)
+                predicate
+                (fields access))
 
-                  (define name
-                    (proc
-                     (lambda (obj value)
-                       (vector-set! (access obj) (- i 1) value)))))
+              (begin
+                (define-syntax record-rule
+                  (syntax-rules (constructor>
+                                 predicate>
+                                 getter> setter>)
 
-                 ((_ constructor predicate access
-                     (setter> i name))
+                    ((_ constructor predicate access
+                        (constructor> name proc))
 
-                  (define name
-                    (lambda (obj value)
-                      (vector-set! (access obj) (- i 1) value))))))
+                     (define name (proc constructor)))
 
-             (record-rule
-              (lambda fields
-                (original-constructor% (list->vector fields)))
-              predicate access rule)
-             ...)))))
+                    ((_ constructor predicate access
+                        (constructor> name))
+
+                     (define name constructor))
+
+                    ((_ constructor predicate access
+                        (predicate> name proc))
+
+                     (define name (proc predicate)))
+
+                    ((_ constructor predicate access
+                        (predicate> name))
+
+                     (define name predicate))
+
+                    ((_ constructor predicate access
+                        (getter> i name proc))
+
+                     (define name
+                       (proc
+                        (lambda (obj)
+                          (vector-ref (access obj) (- i 1))))))
+
+                    ((_ constructor predicate access
+                        (getter> i name))
+
+                     (define name
+                       (lambda (obj)
+                         (vector-ref (access obj) (- i 1)))))
+
+                    ((_ constructor predicate access
+                        (setter> i name proc))
+
+                     (define name
+                       (proc
+                        (lambda (obj value)
+                          (vector-set! (access obj) (- i 1) value)))))
+
+                    ((_ constructor predicate access
+                        (setter> i name))
+
+                     (define name
+                       (lambda (obj value)
+                         (vector-set! (access obj) (- i 1) value))))))
+
+                (record-rule
+                 (lambda fields
+                   (original-constructor% (list->vector fields)))
+                 predicate access rule)
+                ...)))))
+       ))
 
     ))
 
