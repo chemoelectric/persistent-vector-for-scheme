@@ -214,7 +214,7 @@ will document this. I will write more tests.
      _(kons{nbsp}e₁{nbsp}(kons{nbsp}e₂{nbsp}...{nbsp}(kons{nbsp}eₙ{nbsp}knil) ) )_
      where _e₁_, _e₂_, ... , _eₙ_ are the elements of the persistent
      vector{nbsp}__pv__.
-*(pvec-fold _kons_ _knil_ _pv1_ ... _pvN_)*:: This is similar to
-     *pvec-fold-right* for one persistent vector, except _kons_
-     is called with _N{nbsp}+{nbsp}1_ arguments (to account for
-     the _N_ persistent vectors) instead of two arguments.
+*(pvec-fold-right _kons_ _knil_ _pv1_ ... _pvN_)*:: This is similar to
+     *pvec-fold-right* for one persistent vector, except _kons_ is
+     called with _N{nbsp}+{nbsp}1_ arguments (to account for the _N_
+     persistent vectors) instead of two arguments.
