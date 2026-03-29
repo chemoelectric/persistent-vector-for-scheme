@@ -111,14 +111,16 @@ will document this. I will write more tests.
      __i__ th element has the value{nbsp}__x__. The new vector may
      share structure with _pvec_.
 *(pvec-refs _pvec_)*:: Return multiple elements at once, possibly
-     traversing the structure less frequently than by using other
+     traversing the structure less frequently than if you used other
      methods. Exactly the same procedure as *(pvec*+->+*vector
      _pvec_)*. See <<Reverse constructors>>.
 *(pvec-refs _pvec_ _start_)*:: Return multiple elements at once,
-     possibly traversing the structure less frequently than by using
-     other methods. Exactly the same procedure as *(pvec*+->+*vector
-     _pvec_ _start_)*. See <<Reverse constructors>>.
+     possibly traversing the structure less frequently than if you
+     used other methods. Exactly the same procedure as
+     *(pvec*+->+*vector _pvec_ _start_)*. See <<Reverse
+     constructors>>.
 *(pvec-refs _pvec_ _start_ _end_)*:: Return multiple elements at once,
-     possibly traversing the structure less frequently than by using
-     other methods. Exactly the same procedure as *(pvec*+->+*vector
-     _pvec_ _start_ _end_)*. See <<Reverse constructors>>.
+     possibly traversing the structure less frequently than if you
+     used other methods. Exactly the same procedure as
+     *(pvec*+->+*vector _pvec_ _start_ _end_)*. See <<Reverse
+     constructors>>.
