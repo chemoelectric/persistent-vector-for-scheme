@@ -67,28 +67,28 @@ will document this. I will write more tests.
 
 === Reverse constructors
 
-*(pvec*+->+*list _pvec_)*:: Make a list from the elements of the given
+*(pvec*+->+*list _pv_)*:: Make a list from the elements of the given
      persistent vector.
-*(pvec*+->+*list _pvec_ _start_)*:: Make a list from the elements of
+*(pvec*+->+*list _pv_ _start_)*:: Make a list from the elements of
      the given persistent vector, starting at index _start_ and going
      to the end of the vector.
-*(pvec*+->+*list _pvec_ _start_ _end_)*:: Make a list from the
+*(pvec*+->+*list _pv_ _start_ _end_)*:: Make a list from the
      elements of the given vector, starting at index _start_ and going
      to index _end{nbsp}−{nbsp}1_.
-*(pvec*+->+*vector _pvec_)*:: Make a vector from the elements of the
+*(pvec*+->+*vector _pv_)*:: Make a vector from the elements of the
      given persistent vector.
-*(pvec*+->+*vector _pvec_ _start_)*:: Make a vector from the elements
+*(pvec*+->+*vector _pv_ _start_)*:: Make a vector from the elements
      of the given persistent vector, starting at index _start_ and
      going to the end of the vector.
-*(pvec*+->+*vector _pvec_ _start_ _end_)*:: Make a vector from the
+*(pvec*+->+*vector _pv_ _start_ _end_)*:: Make a vector from the
      elements of the given vector, starting at index _start_ and going
      to index _end{nbsp}−{nbsp}1_.
-*(pvec*+->+*generator _pvec_)*:: Make a generator from the elements of
+*(pvec*+->+*generator _pv_)*:: Make a generator from the elements of
      the given persistent vector.
-*(pvec*+->+*generator _pvec_ _start_)*:: Make a generator from the
+*(pvec*+->+*generator _pv_ _start_)*:: Make a generator from the
      elements of the given persistent vector, starting at index
      _start_ and going to the end of the vector.
-*(pvec*+->+*generator _pvec_ _start_ _end_)*:: Make a generator from
+*(pvec*+->+*generator _pv_ _start_ _end_)*:: Make a generator from
      the elements of the given vector, starting at index _start_ and
      going to index _end{nbsp}−{nbsp}1_.
 
@@ -99,102 +99,102 @@ will document this. I will write more tests.
 
 === Structure properties
 
-*(pvec-length _pvec_)*:: Return the number of elements in the
+*(pvec-length _pv_)*:: Return the number of elements in the
      persistent vector.
 
 === Vector operations
 
-*(pvec-ref _pvec_ _i_)*:: Return the __i__ th element of the
+*(pvec-ref _pv_ _i_)*:: Return the __i__ th element of the
      persistent vector.
-*(pvec-set _pvec_ _i_ _x_)*:: Return a new persistent vector whose
-     elements are the same as those of _pvec_, except that the
+*(pvec-set _pv_ _i_ _x_)*:: Return a new persistent vector whose
+     elements are the same as those of _pv_, except that the
      __i__ th element has the value{nbsp}__x__. The new vector may
-     share structure with _pvec_.
-*(pvec-refs _pvec_)*:: Return multiple elements at once, possibly
+     share structure with _pv_.
+*(pvec-refs _pv_)*:: Return multiple elements at once, possibly
      traversing the structure less frequently than if you used other
      methods. This is exactly the same procedure as *(pvec*+->+*vector
-     _pvec_)*. See <<Reverse constructors>>.
-*(pvec-refs _pvec_ _start_)*:: Return multiple elements at once,
+     _pv_)*. See <<Reverse constructors>>.
+*(pvec-refs _pv_ _start_)*:: Return multiple elements at once,
      possibly traversing the structure less frequently than if you
      used other methods. This is exactly the same procedure as
-     *(pvec*+->+*vector _pvec_ _start_)*. See <<Reverse
+     *(pvec*+->+*vector _pv_ _start_)*. See <<Reverse
      constructors>>.
-*(pvec-refs _pvec_ _start_ _end_)*:: Return multiple elements at once,
+*(pvec-refs _pv_ _start_ _end_)*:: Return multiple elements at once,
      possibly traversing the structure less frequently than if you
      used other methods. This is exactly the same procedure as
-     *(pvec*+->+*vector _pvec_ _start_ _end_)*. See <<Reverse
+     *(pvec*+->+*vector _pv_ _start_ _end_)*. See <<Reverse
      constructors>>.
-*(pvec-sets _pvec_ _i_ _x_)*:: Return a new persistent vector whose
-     elements are the same as those of _pvec_, except that the
+*(pvec-sets _pv_ _i_ _x_)*:: Return a new persistent vector whose
+     elements are the same as those of _pv_, except that the
      __i__ th and following elements have the values of the elements
      of the ordinary vector{nbsp}__x__. The new persistent vector may
-     share structure with _pvec_. This method of setting elements
+     share structure with _pv_. This method of setting elements
      might traverse structure less than other methods do.
-*(pvec-sets _pvec_ _i_ _x_ _start_)*:: Return a new persistent vector
-     whose elements are the same as those of _pvec_, except that the
+*(pvec-sets _pv_ _i_ _x_ _start_)*:: Return a new persistent vector
+     whose elements are the same as those of _pv_, except that the
      __i__ th and following elements have the values of some elements
      of the ordinary vector{nbsp}__x__. Only elements of _x_ from
      _start_ to the end of _x_ are used. The new persistent vector may
-     share structure with _pvec_. This method of setting elements
+     share structure with _pv_. This method of setting elements
      might traverse structure less than other methods do.
-*(pvec-sets _pvec_ _i_ _x_ _start_ _end_)*:: Return a new persistent
-     vector whose elements are the same as those of _pvec_, except
+*(pvec-sets _pv_ _i_ _x_ _start_ _end_)*:: Return a new persistent
+     vector whose elements are the same as those of _pv_, except
      that the __i__ th and following elements have the values of some
      elements of the ordinary vector{nbsp}__x__. Only elements of _x_
      from the indices _start_ to _end{nbsp}−{nbsp}1_ are used. The new
-     persistent vector may share structure with _pvec_. This method of
+     persistent vector may share structure with _pv_. This method of
      setting elements might traverse structure less than other
      methods do.
 
 === Stack operations
 
-*(pvec-push _pvec_)*:: Return a persistent vector that has the same
-     elements as _pvec_. It may, in fact, be the same vector, though
+*(pvec-push _pv_)*:: Return a persistent vector that has the same
+     elements as _pv_. It may, in fact, be the same vector, though
      is not necessarily so.
-*(pvec-push _pvec_ _x_)*:: Return a new persistent vector whose
-     elements are the same as those of _pvec_, except that the new
+*(pvec-push _pv_ _x_)*:: Return a new persistent vector whose
+     elements are the same as those of _pv_, except that the new
      element _x_ is pushed onto the tail. The new persistent vector
-     may share structure with _pvec_.
-*(pvec-push _pvec_ _x1_ ... _xN_)*:: Return a new persistent vector
-     whose elements are the same as those of _pvec_, except that the
+     may share structure with _pv_.
+*(pvec-push _pv_ _x1_ ... _xN_)*:: Return a new persistent vector
+     whose elements are the same as those of _pv_, except that the
      new elements __x1__{nbsp}...{nbsp}__xN__ are pushed onto the
-     tail. The new persistent vector may share structure with _pvec_.
-*(pvec-pushes _pvec_ _list_)*:: Return a new persistent vector whose
-     elements are the same as those of _pvec_, except that the
+     tail. The new persistent vector may share structure with _pv_.
+*(pvec-pushes _pv_ _list_)*:: Return a new persistent vector whose
+     elements are the same as those of _pv_, except that the
      elements of _list_ are pushed onto the tail. The new persistent
-     vector may share structure with _pvec_.
-*(pvec-pushes _pvec_ _vector_)*:: Return a new persistent vector whose
-     elements are the same as those of _pvec_, except that the
+     vector may share structure with _pv_.
+*(pvec-pushes _pv_ _vector_)*:: Return a new persistent vector whose
+     elements are the same as those of _pv_, except that the
      elements of _vector_ are pushed onto the tail. The new persistent
-     vector may share structure with _pvec_.
-*(pvec-pushes _pvec_ _vector_ _start_)*:: Return a new persistent
-     vector whose elements are the same as those of _pvec_, except
+     vector may share structure with _pv_.
+*(pvec-pushes _pv_ _vector_ _start_)*:: Return a new persistent
+     vector whose elements are the same as those of _pv_, except
      that the elements of _vector_ beginning at index _start_ are
      pushed onto the tail. The new persistent vector may share
-     structure with _pvec_.
-*(pvec-pushes _pvec_ _vector_ _start_ _end_)*:: Return a new
-     persistent vector whose elements are the same as those of _pvec_,
+     structure with _pv_.
+*(pvec-pushes _pv_ _vector_ _start_ _end_)*:: Return a new
+     persistent vector whose elements are the same as those of _pv_,
      except that the elements of _vector_ from _start_ to
      _end{nbsp}−{nbsp}1_ are pushed onto the tail. The new persistent
-     vector may share structure with _pvec_.
-*(pvec-pushes _pvec_ _generator_)*:: Return a new persistent vector
-     whose elements are the same as those of _pvec_, except that the
+     vector may share structure with _pv_.
+*(pvec-pushes _pv_ _generator_)*:: Return a new persistent vector
+     whose elements are the same as those of _pv_, except that the
      elements returned by a SRFI-158-style generator are pushed onto
      the tail. The new persistent vector may share structure with
-     _pvec_.
-*(pvec-pushes _pvec_ _generator_ _k_)*:: Return a new persistent
-     vector whose elements are the same as those of _pvec_, except
+     _pv_.
+*(pvec-pushes _pv_ _generator_ _k_)*:: Return a new persistent
+     vector whose elements are the same as those of _pv_, except
      that the elements returned by a SRFI-158-style generator are
      pushed onto the tail. At most the first _k_ elements of the
      generator are used. (Therefore the generator may be infinite.)
-     The new persistent vector may share structure with _pvec_.
-*(pvec-pop _pvec_)*:: Return a new persistent vector whose elements
-     are the same as those of _pvec_, except the last element is
-     removed. The new vector may share structure with _pvec_.
-*(pvec-pop _pvec_ 0)*:: Return a persistent vector that has the same
-     elements as _pvec_. It may, in fact, be the same vector, though
+     The new persistent vector may share structure with _pv_.
+*(pvec-pop _pv_)*:: Return a new persistent vector whose elements
+     are the same as those of _pv_, except the last element is
+     removed. The new vector may share structure with _pv_.
+*(pvec-pop _pv_ 0)*:: Return a persistent vector that has the same
+     elements as _pv_. It may, in fact, be the same vector, though
      is not necessarily so.
-*(pvec-pop _pvec_ _n_)*:: Return a new persistent vector whose
-     elements are the same as those of _pvec_, except the _n_ last
+*(pvec-pop _pv_ _n_)*:: Return a new persistent vector whose
+     elements are the same as those of _pv_, except the _n_ last
      elements are removed. The new vector may share structure with
-     _pvec_.
+     _pv_.
