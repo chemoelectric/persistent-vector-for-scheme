@@ -14,7 +14,7 @@ implemented as ‘bit-partitioned vector tries with tails’. The
 implementation is a rewrite as portable Scheme of a CHICKEN egg I
 wrote several years ago. That, in turn, was adapted from a generic C
 macro implementation I wrote years earlier, and which was used to make
-Guile 2.0 persistent vectors.]
+persistent vectors for Guile 2.0.]
 
 This distribution assumes you have both GNU Make and either GNU M4 or
 OpenBSD M4. For installation, you will likely want ‘doas’, ‘sudo’, or
