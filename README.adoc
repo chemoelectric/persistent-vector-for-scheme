@@ -112,15 +112,36 @@ will document this. I will write more tests.
      share structure with _pvec_.
 *(pvec-refs _pvec_)*:: Return multiple elements at once, possibly
      traversing the structure less frequently than if you used other
-     methods. Exactly the same procedure as *(pvec*+->+*vector
+     methods. This is exactly the same procedure as *(pvec*+->+*vector
      _pvec_)*. See <<Reverse constructors>>.
 *(pvec-refs _pvec_ _start_)*:: Return multiple elements at once,
      possibly traversing the structure less frequently than if you
-     used other methods. Exactly the same procedure as
+     used other methods. This is exactly the same procedure as
      *(pvec*+->+*vector _pvec_ _start_)*. See <<Reverse
      constructors>>.
 *(pvec-refs _pvec_ _start_ _end_)*:: Return multiple elements at once,
      possibly traversing the structure less frequently than if you
-     used other methods. Exactly the same procedure as
+     used other methods. This is exactly the same procedure as
      *(pvec*+->+*vector _pvec_ _start_ _end_)*. See <<Reverse
      constructors>>.
+*(pvec-sets _pvec_ _i_ _x_)*:: Return a new persistent vector whose
+     elements are the same as those of _pvec_, except that the
+     __i__ th and following elements have the values of the elements
+     of the ordinary vector{nbsp}__x__. The new persistent vector may
+     share structure with _pvec_. This method of setting elements
+     might traverse structure less than other methods do.
+*(pvec-sets _pvec_ _i_ _x_ _start_)*:: Return a new persistent vector
+     whose elements are the same as those of _pvec_, except that the
+     __i__ th and following elements have the values of some elements
+     of the ordinary vector{nbsp}__x__. Only elements of _x_ from
+     _start_ to the end of _x_ are used. The new persistent vector may
+     share structure with _pvec_. This method of setting elements
+     might traverse structure less than other methods do.
+*(pvec-sets _pvec_ _i_ _x_ _start_ _end_)*:: Return a new persistent
+     vector whose elements are the same as those of _pvec_, except
+     that the __i__ th and following elements have the values of some
+     elements of the ordinary vector{nbsp}__x__. Only elements of _x_
+     from the indices _start_ to _end{nbsp}−{nbsp}1_ are used. The new
+     persistent vector may share structure with _pvec_. This method of
+     setting elements might traverse structure less than other
+     methods do.
