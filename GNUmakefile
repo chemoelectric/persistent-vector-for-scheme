@@ -36,6 +36,7 @@ GAUCHE = gosh
 LOKO = loko
 SAGITTARIUS = sagittarius
 
+.PHONY: check-all-scheme-implementations
 check-all-scheme-implementations: \
 	check-chez-r6rs \
 	check-chibi-r7rs \
