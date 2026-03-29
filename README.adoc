@@ -145,3 +145,56 @@ will document this. I will write more tests.
      persistent vector may share structure with _pvec_. This method of
      setting elements might traverse structure less than other
      methods do.
+
+=== Stack operations
+
+*(pvec-push _pvec_)*:: Return a persistent vector that has the same
+     elements as _pvec_. It may, in fact, be the same vector, though
+     is not necessarily so.
+*(pvec-push _pvec_ _x_)*:: Return a new persistent vector whose
+     elements are the same as those of _pvec_, except that the new
+     element _x_ is pushed onto the tail. The new persistent vector
+     may share structure with _pvec_.
+*(pvec-push _pvec_ _x1_ ... _xN_)*:: Return a new persistent vector
+     whose elements are the same as those of _pvec_, except that the
+     new elements __x1__{nbsp}...{nbsp}__xN__ are pushed onto the
+     tail. The new persistent vector may share structure with _pvec_.
+*(pvec-pushes _pvec_ _list_)*:: Return a new persistent vector whose
+     elements are the same as those of _pvec_, except that the
+     elements of _list_ are pushed onto the tail. The new persistent
+     vector may share structure with _pvec_.
+*(pvec-pushes _pvec_ _vector_)*:: Return a new persistent vector whose
+     elements are the same as those of _pvec_, except that the
+     elements of _vector_ are pushed onto the tail. The new persistent
+     vector may share structure with _pvec_.
+*(pvec-pushes _pvec_ _vector_ _start_)*:: Return a new persistent
+     vector whose elements are the same as those of _pvec_, except
+     that the elements of _vector_ beginning at index _start_ are
+     pushed onto the tail. The new persistent vector may share
+     structure with _pvec_.
+*(pvec-pushes _pvec_ _vector_ _start_ _end_)*:: Return a new
+     persistent vector whose elements are the same as those of _pvec_,
+     except that the elements of _vector_ from _start_ to
+     _end{nbsp}−{nbsp}1_ are pushed onto the tail. The new persistent
+     vector may share structure with _pvec_.
+*(pvec-pushes _pvec_ _generator_)*:: Return a new persistent vector
+     whose elements are the same as those of _pvec_, except that the
+     elements returned by a SRFI-158-style generator are pushed onto
+     the tail. The new persistent vector may share structure with
+     _pvec_.
+*(pvec-pushes _pvec_ _generator_ _k_)*:: Return a new persistent
+     vector whose elements are the same as those of _pvec_, except
+     that the elements returned by a SRFI-158-style generator are
+     pushed onto the tail. At most the first _k_ elements of the
+     generator are used. (Therefore the generator may be infinite.)
+     The new persistent vector may share structure with _pvec_.
+*(pvec-pop _pvec_)*:: Return a new persistent vector whose elements
+     are the same as those of _pvec_, except the last element is
+     removed. The new vector may share structure with _pvec_.
+*(pvec-pop _pvec_ 0)*:: Return a persistent vector that has the same
+     elements as _pvec_. It may, in fact, be the same vector, though
+     is not necessarily so.
+*(pvec-pop _pvec_ _n_)*:: Return a new persistent vector whose
+     elements are the same as those of _pvec_, except the _n_ last
+     elements are removed. The new vector may share structure with
+     _pvec_.
