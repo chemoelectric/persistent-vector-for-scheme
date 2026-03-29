@@ -794,6 +794,24 @@
                                  (list seed) v*)))
                       (apply kons arg*)))))))))
 
+(define pvec-fold-right
+  (case-lambda
+    ((kons knil v)
+     (let ((len (pvec-length v)))
+       (fold-ec knil (:range i (fx- len 1) -1 -1)
+         (pvec-ref v i) kons)))
+    ((kons knil . v*)
+     (if (null? v*)
+       knil
+       (let ((len (min-ec (:list v v*) (pvec-length v))))
+         (fold-ec knil (:range i (fx- len 1) -1 -1) i
+                  (lambda (i seed)
+                    (let ((arg* (fold-right
+                                 (lambda (v lst)
+                                   (cons (pvec-ref v i) lst))
+                                 (list seed) v*)))
+                      (apply kons arg*)))))))))
+
 ;;;-------------------------------------------------------------------
 ;;; local variables:
 ;;; mode: scheme

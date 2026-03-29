@@ -27,7 +27,8 @@ m4_changequote(“,”)m4_changecom“”m4_dnl
           pvec-refs ;; Return elements as vector.
           pvec-sets ;; Set elements from vector.
 
-          pvec-fold)
+          pvec-fold
+          pvec-fold-right)
 
   (import (scheme base)
           (scheme case-lambda)
