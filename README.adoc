@@ -41,7 +41,7 @@ supposed to.]
 (both R⁶RS and R⁷RS), and Sagittarius Scheme (both R⁶RS and R⁷RS). I
 will document this. I will write more tests.
 
-== Programming interface
+== Programming interface footnote:[Indices are zero-based.]
 
 === Constructors
 
@@ -110,3 +110,15 @@ will document this. I will write more tests.
      elements are the same as those of _pvec_, except that the
      __i__ th element has the value{nbsp}__x__. The new vector may
      share structure with _pvec_.
+*(pvec-refs _pvec_)*:: Return multiple elements at once, possibly
+     traversing the structure less frequently than by using other
+     methods. Exactly the same procedure as *(pvec*+->+*vector
+     _pvec_)*. See <<Reverse constructors>>.
+*(pvec-refs _pvec_ _start_)*:: Return multiple elements at once,
+     possibly traversing the structure less frequently than by using
+     other methods. Exactly the same procedure as *(pvec*+->+*vector
+     _pvec_ _start_)*. See <<Reverse constructors>>.
+*(pvec-refs _pvec_ _start_ _end_)*:: Return multiple elements at once,
+     possibly traversing the structure less frequently than by using
+     other methods. Exactly the same procedure as *(pvec*+->+*vector
+     _pvec_ _start_ _end_)*. See <<Reverse constructors>>.
