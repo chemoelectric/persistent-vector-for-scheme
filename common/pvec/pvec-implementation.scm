@@ -783,15 +783,16 @@
      (let ((len (pvec-length v)))
        (fold-ec knil (:range i len) (pvec-ref v i) kons)))
     ((kons knil . v*)
-     (let* ((gen* (map pvec->generator v*))
-            (gen! (lambda ()
-                    (let ((x* (map (lambda (g!) (g!)) gen*)))
-                      (if (any eof-object? x*)
-                        (eof-object)
-                        x*)))))
-       (fold-ec knil (:generator x* gen!) x*
-                (lambda (t* seed)
-                  (apply kons (append! t* (list seed)))))))))
+     (if (null? v*)
+       knil
+       (let ((len (min-ec (:list v v*) (pvec-length v))))
+         (fold-ec knil (:range i len) i
+                  (lambda (i seed)
+                    (let ((arg* (fold-right
+                                 (lambda (v lst)
+                                   (cons (pvec-ref v i) lst))
+                                 (list seed) v*)))
+                      (apply kons arg*)))))))))
 
 ;;;-------------------------------------------------------------------
 ;;; local variables:
