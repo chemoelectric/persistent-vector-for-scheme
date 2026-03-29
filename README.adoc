@@ -43,7 +43,9 @@ will document this. I will write more tests.
 
 == Programming interface footnote:[Indices are zero-based.]
 
-=== Constructors
+=== Library *(pvec)*
+
+==== Constructors
 
 *(pvec)*:: Make an empty persistent vector.
 *(pvec _elem1_ ...)*:: Make a persistent vector containing the given
@@ -65,7 +67,7 @@ will document this. I will write more tests.
      returned by a SRFI-158-style generator. (Thus the generator may
      be an infinite generator.)
 
-=== Reverse constructors
+==== Reverse constructors
 
 *(pvec*+->+*list _pv_)*:: Make a list from the elements of the given
      persistent vector.
@@ -92,17 +94,17 @@ will document this. I will write more tests.
      the elements of the given vector, starting at index _start_ and
      going to index _end{nbsp}−{nbsp}1_.
 
-=== Type predicate
+==== Type predicate
 
 *(pvec? _object_)*:: Is _object_ a _pvec_ persistent vector? *#t* or
      *#f*
 
-=== Structure properties
+==== Structure properties
 
 *(pvec-length _pv_)*:: Return the number of elements in the
      persistent vector.
 
-=== Vector operations
+==== Vector operations
 
 *(pvec-ref _pv_ _i_)*:: Return the __i__ th element of the
      persistent vector.
@@ -146,7 +148,7 @@ will document this. I will write more tests.
      setting elements might traverse structure less than other
      methods do.
 
-=== Stack operations
+==== Stack operations
 
 *(pvec-push _pv_)*:: Return a persistent vector that has the same
      elements as _pv_. It may, in fact, be the same vector, though
@@ -160,41 +162,59 @@ will document this. I will write more tests.
      new elements __x1__{nbsp}...{nbsp}__xN__ are pushed onto the
      tail. The new persistent vector may share structure with _pv_.
 *(pvec-pushes _pv_ _list_)*:: Return a new persistent vector whose
-     elements are the same as those of _pv_, except that the
-     elements of _list_ are pushed onto the tail. The new persistent
-     vector may share structure with _pv_.
+     elements are the same as those of _pv_, except that the elements
+     of _list_ are pushed onto the tail. The new persistent vector may
+     share structure with _pv_.
 *(pvec-pushes _pv_ _vector_)*:: Return a new persistent vector whose
-     elements are the same as those of _pv_, except that the
-     elements of _vector_ are pushed onto the tail. The new persistent
-     vector may share structure with _pv_.
-*(pvec-pushes _pv_ _vector_ _start_)*:: Return a new persistent
-     vector whose elements are the same as those of _pv_, except
-     that the elements of _vector_ beginning at index _start_ are
+     elements are the same as those of _pv_, except that the elements
+     of _vector_ are pushed onto the tail. The new persistent vector
+     may share structure with _pv_.
+*(pvec-pushes _pv_ _vector_ _start_)*:: Return a new persistent vector
+     whose elements are the same as those of _pv_, except that the
+     elements of _vector_ beginning at index _start_ are pushed onto
+     the tail. The new persistent vector may share structure with
+     _pv_.
+*(pvec-pushes _pv_ _vector_ _start_ _end_)*:: Return a new persistent
+     vector whose elements are the same as those of _pv_, except that
+     the elements of _vector_ from _start_ to _end{nbsp}−{nbsp}1_ are
      pushed onto the tail. The new persistent vector may share
      structure with _pv_.
-*(pvec-pushes _pv_ _vector_ _start_ _end_)*:: Return a new
-     persistent vector whose elements are the same as those of _pv_,
-     except that the elements of _vector_ from _start_ to
-     _end{nbsp}−{nbsp}1_ are pushed onto the tail. The new persistent
-     vector may share structure with _pv_.
 *(pvec-pushes _pv_ _generator_)*:: Return a new persistent vector
      whose elements are the same as those of _pv_, except that the
      elements returned by a SRFI-158-style generator are pushed onto
      the tail. The new persistent vector may share structure with
      _pv_.
-*(pvec-pushes _pv_ _generator_ _k_)*:: Return a new persistent
-     vector whose elements are the same as those of _pv_, except
-     that the elements returned by a SRFI-158-style generator are
-     pushed onto the tail. At most the first _k_ elements of the
-     generator are used. (Therefore the generator may be infinite.)
-     The new persistent vector may share structure with _pv_.
-*(pvec-pop _pv_)*:: Return a new persistent vector whose elements
-     are the same as those of _pv_, except the last element is
-     removed. The new vector may share structure with _pv_.
+*(pvec-pushes _pv_ _generator_ _k_)*:: Return a new persistent vector
+     whose elements are the same as those of _pv_, except that the
+     elements returned by a SRFI-158-style generator are pushed onto
+     the tail. At most the first _k_ elements of the generator are
+     used. (Therefore the generator may be infinite.) The new
+     persistent vector may share structure with _pv_.
+*(pvec-pop _pv_)*:: Return a new persistent vector whose elements are
+     the same as those of _pv_, except the last element is removed.
+     The new vector may share structure with _pv_.
 *(pvec-pop _pv_ 0)*:: Return a persistent vector that has the same
-     elements as _pv_. It may, in fact, be the same vector, though
-     is not necessarily so.
-*(pvec-pop _pv_ _n_)*:: Return a new persistent vector whose
-     elements are the same as those of _pv_, except the _n_ last
-     elements are removed. The new vector may share structure with
-     _pv_.
+     elements as _pv_. It may, in fact, be the same vector, though is
+     not necessarily so.
+*(pvec-pop _pv_ _n_)*:: Return a new persistent vector whose elements
+     are the same as those of _pv_, except the _n_ last elements are
+     removed. The new vector may share structure with _pv_.
+
+==== Folds
+
+*(pvec-fold _kons_ _knil_ _pv_)*:: Semantically equivalent to
+     _(kons{nbsp}eₙ{nbsp}...{nbsp}(kons{nbsp}e₂{nbsp}(kons{nbsp}e₁{nbsp}knil) ){nbsp}...{nbsp})_
+     where _e₁_, _e₂_, ... , _eₙ_ are the elements of the persistent
+     vector{nbsp}__pv__.
+*(pvec-fold _kons_ _knil_ _pv1_ ... _pvN_)*:: This is similar to
+     *pvec-fold* for one persistent vector, except _kons_ is called
+     with _N{nbsp}+{nbsp}1_ arguments (to account for the _N_
+     persistent vectors) instead of two arguments.
+*(pvec-fold-right _kons_ _knil_ _pv_)*:: Semantically equivalent to
+     _(kons{nbsp}e₁{nbsp}(kons{nbsp}e₂{nbsp}...{nbsp}(kons{nbsp}eₙ{nbsp}knil) ) )_
+     where _e₁_, _e₂_, ... , _eₙ_ are the elements of the persistent
+     vector{nbsp}__pv__.
+*(pvec-fold _kons_ _knil_ _pv1_ ... _pvN_)*:: This is similar to
+     *pvec-fold-right* for one persistent vector, except _kons_
+     is called with _N{nbsp}+{nbsp}1_ arguments (to account for
+     the _N_ persistent vectors) instead of two arguments.
