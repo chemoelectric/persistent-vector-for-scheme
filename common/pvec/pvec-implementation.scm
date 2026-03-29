@@ -785,7 +785,7 @@
     ((kons knil . v*)
      (if (null? v*)
        knil
-       (let ((len (min-ec (:list v v*) (pvec-length v))))
+       (let ((len (apply fxmin (map pvec-length v*))))
          (fold-ec knil (:range i len) i
                   (lambda (i seed)
                     (let ((arg* (fold-right
@@ -803,7 +803,7 @@
     ((kons knil . v*)
      (if (null? v*)
        knil
-       (let ((len (min-ec (:list v v*) (pvec-length v))))
+       (let ((len (apply fxmin (map pvec-length v*))))
          (fold-ec knil (:range i (fx- len 1) -1 -1) i
                   (lambda (i seed)
                     (let ((arg* (fold-right

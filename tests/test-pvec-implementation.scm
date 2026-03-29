@@ -44,6 +44,20 @@
       (test-equal (+ i 1) (pvec-ref v2 i)))
     ))
 
+
+
+(test-equal '(5 4 3 2 1 0)
+  (pvec-fold cons '(0) (pvec 1 2 3 4 5)))
+
+(test-equal '(c 3 b 2 a 1)
+  (pvec-fold cons* '() (pvec 'a 'b 'c) (pvec 1 2 3 4 5)))
+
+(test-equal '(1 2 3 4 5 6)
+  (pvec-fold-right cons '(6) (pvec 1 2 3 4 5)))
+
+(test-equal '(a 1 b 2 c 3)
+  (pvec-fold-right cons* '() (pvec 'a 'b 'c) (pvec 1 2 3 4 5)))
+
 (display successes)
 (display " successes\n")
 (display failures)
