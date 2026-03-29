@@ -637,12 +637,6 @@
        (list-ec (:range i start end)
          (pvec-ref v i))))))
 
-(define pvec->vector
-  (case-lambda
-    ((v) (pvec->vector v 0 (pvec-length v)))
-    ((v start) (pvec->vector v start (pvec-length v)))
-    ((v start end) (pvec-refs v start (fx- end start)))))
-
 (define pvec->generator
   (case-lambda
     ((v) (pvec->generator v 0 (pvec-length v)))
@@ -658,12 +652,21 @@
                (set! i (fx+ i 1))
                elem))))))))
 
-(define (pvec-refs v i n)
-  ;; Return n entries of the persistent vector v, starting at index i.
-  ;; Return the entries as a regular vector.
-  (let ((result (make-vector n)))
-    (copy-from-pvec! v i result 0 n)
-    result))
+(define pvec-refs
+  ;; Return entries of the persistent vector v, as a regular vector.
+  ;; This and pvec->vector are synonyms.
+  (case-lambda
+    ((v start end)
+     (let ((len (pvec-length v)))
+       (check-indexes v start end len)
+       (let ((n (fx- end start)))
+         (let ((result (make-vector n)))
+           (copy-from-pvec! v start result 0 n)
+           result))))
+    ((v start) (pvec-refs v start (pvec-length v)))
+    ((v) (pvec-refs v 0 (pvec-length v)))))
+
+(define pvec->vector pvec-refs)
 
 (define (copy-from-pvec! v i w j n)
   ;; Copy n entries from the persistent vector v, starting at i, to
@@ -693,14 +696,20 @@
 
 (define pvec-sets
   ;; Set multiple entries of the persistent vector v, starting at i,
-  ;; from entries in the regular vector x.
+  ;; from entries in the regular vector x (either the whole vector or
+  ;; a subvector).
   (case-lambda
     ((v i x)
-     (pvec-sets v i x 0 (vector-length x)))
+     (let ((len (vector-length x)))
+       (copy-to-pvec v i x 0 len)))
     ((v i x start)
-     (pvec-sets v i x start (fx- (vector-length x) start)))
-    ((v i x start n)
-     (copy-to-pvec v i x start n))))
+     (let ((len (vector-length x)))
+       (check-indexes x start len)
+       (copy-to-pvec v i x start (fx- len start))))
+    ((v i x start end)
+     (let ((len (vector-length x)))
+       (check-indexes x start end len)
+       (copy-to-pvec v i x start (fx- end start))))))
 
 (define (copy-to-pvec v i w j n)
   ;; Copy n entries to the persistent vector v, starting at i, from
