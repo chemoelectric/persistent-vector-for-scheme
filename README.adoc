@@ -226,7 +226,7 @@ will document this. I will write more tests.
 
 ==== Comprehensions
 
-Comprehensions documented in SRFI-42:footnote:srfi-42[https://srfi.schemers.org/srfi-42/] ::
+Comprehensions documented in SRFI-42: footnote:srfi-42[https://srfi.schemers.org/srfi-42/] ::
 *do-ec* *list-ec* *append-ec* *string-ec* *string-append-ec*
 *vector-ec* *vector-of-length-ec* *sum-ec* *product-ec* *min-ec*
 *max-ec* *any?-ec* *every?-ec* *first-ec* *last-ec* *fold-ec*
@@ -237,7 +237,7 @@ Comprehensions documented in SRFI-42:footnote:srfi-42[https://srfi.schemers.org/
 
 ==== Generators
 
-Generators documented in SRFI-42:footnote:srfi-42[] :: *:list*
+Generators documented in SRFI-42: footnote:srfi-42[] :: *:list*
 *:string* *:vector* *:integers* *:range* *:real-range* *:char-range*
 *:port* *:do* *:let* *:parallel* *:while* *:until*
 
