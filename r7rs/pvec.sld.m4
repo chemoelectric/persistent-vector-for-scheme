@@ -16,16 +16,16 @@ m4_changequote(“,”)m4_changecom“”m4_dnl
           pvec?
           pvec-length
 
-          pvec-push
-          pvec-pushes ;; elements from list, vector, generator.
-
-          pvec-pop
-
           pvec-ref
           pvec-set
 
           pvec-refs ;; Return elements as vector.
           pvec-sets ;; Set elements from vector.
+
+          pvec-push
+          pvec-pushes ;; elements from list, vector, generator.
+
+          pvec-pop
 
           pvec-fold
           pvec-fold-right)

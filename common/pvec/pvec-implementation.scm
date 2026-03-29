@@ -256,6 +256,19 @@
           (let ((gen! (make-vector-generator
                        source start (vector-length source))))
             (pvec-pushes-from-generator v gen!)))
+         ((procedure? source)
+          ;; Really ‘start’ is a limit on how long to run the
+          ;; generator.
+          (let ((j start))
+            (when (negative? j)
+              (error "non-negative value expected" j))
+            (let ((gen! (lambda ()
+                          (if (zero? j)
+                            (eof-object)
+                            (begin
+                              (set! j (- j 1))
+                              (source))))))
+              (pvec-pushes-from-generator v gen!))))
          (else
           (error bad-source-message source))))
       ((v source start end)

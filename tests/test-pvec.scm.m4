@@ -4,6 +4,7 @@ m4_changequote(“,”)m4_changecom“”m4_dnl
 ;; SPDX-License-Identifier: MIT
 
 (import (scheme base)
+        (scheme case-lambda)
         (scheme process-context)
         (scheme write)
         (pvec)
@@ -15,11 +16,11 @@ m4_changequote(“,”)m4_changecom“”m4_dnl
   (loko (import (srfi :1 lists)))
   (else (import (srfi srfi-1))))
 (cond-expand
-  (chicken-5 (import (srfi 158)))
-  ((library (scheme generator)) (import (scheme generator)))
-  ((library (srfi 158)) (import (srfi 158)))
-  (loko (import (srfi :158 generators-and-accumulators)))
-  (else (import (srfi srfi-158))))
+  (chicken-5 (import (srfi 143)))
+  ((library (scheme fixnum)) (import (scheme fixnum)))
+  ((library (srfi 143)) (import (srfi 143)))
+  (loko (import (srfi :143 fixnums)))
+  (else (import (srfi srfi-143))))
 
 m4_include(“tests/tests-common.scm”)
 m4_include(“tests/test-pvec-implementation.scm”)

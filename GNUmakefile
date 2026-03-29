@@ -36,6 +36,17 @@ GAUCHE = gosh
 LOKO = loko
 SAGITTARIUS = sagittarius
 
+check-all-scheme-implementations: \
+	check-chez-r6rs \
+	check-chibi-r7rs \
+	check-gauche-r7rs \
+	check-loko-r6rs \
+	check-loko-r7rs \
+	check-sagittarius-r6rs \
+	check-sagittarius-r7rs \
+	check-chicken-5-r7rs \
+	check-chicken-6-r7rs
+
 check-r6rs = $(call v,CHECK)$(foreach f,$(3),$(2)=$(PWD)/r6rs$${$(2)+:}$${$(2)} $(1) $(f);)
 check-r7rs = $(call v,CHECK)$(foreach f,$(3),$(2)=$(PWD)/r7rs$${$(2)+:}$${$(2)} $(1) $(f);)
 
@@ -45,7 +56,7 @@ check-gauche-r7rs = $(call check-r7rs,$(GAUCHE) -r7 --,GAUCHE_LOAD_PATH,$(1))
 check-loko-r6rs = $(call check-r6rs,$(LOKO) -std=r6rs --program,LOKO_LIBRARY_PATH,$(1))
 check-loko-r7rs = $(call check-r7rs,$(LOKO) -std=r7rs --script,LOKO_LIBRARY_PATH,$(1))
 check-sagittarius-r6rs = $(call check-r6rs,$(SAGITTARIUS) -d -r6 --,SAGITTARIUS_LOADPATH,$(1))
-check-sagittarius-r7rs = $(call check-r7rs,$(SAGITTARIUS) -d -r7 -S.sagittarius.sld --,SAGITTARIUS_LOADPATH,$(1))
+check-sagittarius-r7rs = $(call check-r7rs,$(SAGITTARIUS) -d -r7 --,SAGITTARIUS_LOADPATH,$(1))
 
 TSTPVEC_R6RS = tests/test-pvec.sps
 TSTPVEC_R7RS = tests/test-pvec.scm
@@ -175,7 +186,7 @@ check-chibi-r7rs: $(R7RS_DEPS) $(R7RS_TESTS)
 	$(call check-chibi-r7rs, $(TSTPVEC_R7RS))
 
 .PHONY: check-chicken-5-r7rs check-chicken-6-r7rs
- check-chicken-5-r7rs: chicken-5/pvec.so $(R7RS_TESTS)
+check-chicken-5-r7rs: chicken-5/pvec.so $(R7RS_TESTS)
 	$(call v,CHECK)( \
 	  export CHICKEN_REPOSITORY_PATH=$${PWD}/chicken-5:$(CHICKEN_5_REPOSITORY_PATH); \
 	  $(CSI_5) -s $(TSTPVEC_R7RS); \

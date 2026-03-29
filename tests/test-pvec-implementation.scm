@@ -3,6 +3,21 @@
 
 (display " ===== test-pvec =====\n")
 
+(define vector->generator
+  (case-lambda
+    ((vec start end)
+     (let ((i start))
+       (lambda ()
+         (if (fx=? i end)
+           (eof-object)
+           (let ((elem (vector-ref vec i)))
+             (set! i (fx+ i 1))
+             elem)))))
+    ((vec start)
+     (vector->generator vec start (vector-length vec)))
+    ((vec)
+     (vector->generator vec 0 (vector-length vec)))))
+
 (let ((v (pvec 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16
                17 18 19 20 21 22 23 24 25 26 27 28 29
                30 31 32 33 34 35 36 37 38 39 40 41 42
