@@ -1,10 +1,66 @@
 = Persistent vectors for Scheme
 
-This is a rewrite as portable Scheme of a CHICKEN egg I wrote several
-years ago. That, in turn, was adapted from a generic C macro
-implementation I wrote years earlier, and which was used to make Guile
-2.0 persistent vectors.
+‘Persistent’ vectors are also called ‘immutable’ vectors. They are
+single dimensional arrays whose past states effectively persist, as
+long as some part of the program is referring to those states. They
+also may be used as stacks. They can serve as a limited alternative to
+lists. They have the frequent advantage that ‘pushing’ extends them at
+the tail end—unlike persistent lists or
+vlists,footnote:[https://lampwww.epfl.ch/papers/techlists.pdf] which
+get extended at the head. However, I do not implement pushing or
+popping from the head end (it is not an ideque), and I do not
+implement insertion or deletion.footnote:[The vectors currently are
+implemented as ‘bit-partitioned vector tries with tails’. The
+implementation is a rewrite as portable Scheme of a CHICKEN egg I
+wrote several years ago. That, in turn, was adapted from a generic C
+macro implementation I wrote years earlier, and which was used to make
+Guile 2.0 persistent vectors.]
 
-I will document the interface here.
+This distribution assumes you have both GNU Make and either GNU M4 or
+OpenBSD M4. For installation, you will likely want ‘doas’, ‘sudo’, or
+some similar way to execute a command with superuser privileges.
+However, of course, feel free to modify the GNUmakefile or not use it
+at all. One can use a text editor or Awk instead of M4, for instance.
 
-The work should be considered unreliable until I write some tests.
+* There is installation for Chez Scheme, Gauche Scheme, CHICKEN 5, and
+CHICKEN 6, which I will document. You may need chez-srfi, CHICKEN
+eggs, etc.footnote:[The code is primarily for R⁷RS, with R⁶RS support
+to the degree Scheme code of any variety can be tolerated by it. In
+particular, I export partial implementation of SRFI-42, but find that
+SRFI-42 ‘index’ variables are unreliable in at least Chez Scheme. This
+is so, even though I include my own copy of the reference
+implementation (mainly because too many other SRFI-42 libraries have
+their ability to be extended broken). Only for Chibi and CHICKEN do I
+use what ‘comes with’ the compiler/interpreter. However, ‘index’
+variables are redundant with ‘:parallel’ constructs, and are a nasty
+complexity, so were it up to me they would have been removed from
+SRFI-42. Just do not use them. I implement them merely because one is
+supposed to.]
+
+* There is testing for the above, and also for Chibi Scheme, Loko Scheme
+(both R⁶RS and R⁷RS), and Sagittarius Scheme (both R⁶RS and R⁷RS). I
+will document this. I will write more tests.
+
+== Programming interface
+
+=== Constructors
+
+*(pvec)*:: Make an empty persistent vector.
+*(pvec _elem1_ ...)*:: Make a persistent vector containing the given
+     elements.
+*(list*+->+*pvec _list_)*:: Make a persistent vector from the elements
+     of the given list.
+*(vector*+->+*pvec _vector_)*:: Make a persistent vector from the
+     elements of the given vector.
+*(vector*+->+*pvec _vector_ _start_)*:: Make a persistent vector from
+     the elements of the given vector, starting at index _start_ and
+     going to the end of the vector.
+*(vector*+->+*pvec _vector_ _start_ _end_)*:: Make a persistent vector
+     from the elements of the given vector, starting at index _start_
+     and going to index _end{nbsp}pass:[&#8722;]{nbsp}1_.
+*(generator*+->+*pvec _generator_)*:: Make a persistent vector from
+     the elements returned by a SRFI-158-style generator.
+*(generator*+->+*pvec _generator_ _k_)*:: Make a persistent vector
+     from the elements returned by at most the first _k_ elements
+     returned by a SRFI-158-style generator. (Thus the generator may
+     be an infinite generator.)
