@@ -61,11 +61,13 @@ will document this. I will write more tests.
      from the elements of the given vector, starting at index _start_
      and going to index _end{nbsp}−{nbsp}1_.
 *(generator*+->+*pvec _generator_)*:: Make a persistent vector from
-     the elements returned by a SRFI-158-style generator.
+     the elements returned by a
+     SRFI-158-style footnote:srfi-158[https://srfi.schemers.org/srfi-158/]
+     generator.
 *(generator*+->+*pvec _generator_ _k_)*:: Make a persistent vector
      from the elements returned by at most the first _k_ elements
-     returned by a SRFI-158-style generator. (Thus the generator may
-     be an infinite generator.)
+     returned by a SRFI-158-style footnote:srfi-158[] generator. (Thus
+     the generator may be an infinite generator.)
 
 ==== Reverse constructors
 
@@ -181,15 +183,16 @@ will document this. I will write more tests.
      structure with _pv_.
 *(pvec-pushes _pv_ _generator_)*:: Return a new persistent vector
      whose elements are the same as those of _pv_, except that the
-     elements returned by a SRFI-158-style generator are pushed onto
-     the tail. The new persistent vector may share structure with
-     _pv_.
+     elements returned by a SRFI-158-style footnote:srfi-158[]
+     generator are pushed onto the tail. The new persistent vector may
+     share structure with _pv_.
 *(pvec-pushes _pv_ _generator_ _k_)*:: Return a new persistent vector
      whose elements are the same as those of _pv_, except that the
-     elements returned by a SRFI-158-style generator are pushed onto
-     the tail. At most the first _k_ elements of the generator are
-     used. (Therefore the generator may be infinite.) The new
-     persistent vector may share structure with _pv_.
+     elements returned by a SRFI-158-style footnote:srfi-158[]
+     generator are pushed onto the tail. At most the first _k_
+     elements of the generator are used. (Therefore the generator may
+     be infinite.) The new persistent vector may share structure with
+     _pv_.
 *(pvec-pop _pv_)*:: Return a new persistent vector whose elements are
      the same as those of _pv_, except the last element is removed.
      The new vector may share structure with _pv_.
@@ -218,3 +221,31 @@ will document this. I will write more tests.
      *pvec-fold-right* for one persistent vector, except _kons_ is
      called with _N{nbsp}+{nbsp}1_ arguments (to account for the _N_
      persistent vectors) instead of two arguments.
+
+=== Library *(pvec eager-comprehensions)*
+
+==== Comprehensions
+
+Comprehensions documented in SRFI-42:footnote:srfi-42[https://srfi.schemers.org/srfi-42/] ::
+*do-ec* *list-ec* *append-ec* *string-ec* *string-append-ec*
+*vector-ec* *vector-of-length-ec* *sum-ec* *product-ec* *min-ec*
+*max-ec* *any?-ec* *every?-ec* *first-ec* *last-ec* *fold-ec*
+*fold3-ec*
+
+*(pvec-ec _<qualifier>pass:[*]_ _<expression>_)*:: Return the
+     persistent vector of all values of _<expression>_.
+
+==== Generators
+
+Generators documented in SRFI-42:footnote:srfi-42[] :: *:list*
+*:string* *:vector* *:integers* *:range* *:real-range* *:char-range*
+*:port* *:do* *:let* *:parallel* *:while* *:until*
+
+*(:pvec _<vars>_ _<arg1>_ _<arg>pass:[*]_)*:: Run through one or more
+     persistent vector, much as the *:list*, *:string*, or *:vector*
+     generator does with its respective data structure.
+
+*(:generator _<vars>_ _<arg1>_ _<arg>pass:[*]_)*:: Run through one or
+     more SRFI-158-style footnote:srfi-158[] generator, in
+     sequence.footnote:[With *:generator*, there is no need for
+     SRFI-42’s implementationally obsolescent dispatched generators.]
