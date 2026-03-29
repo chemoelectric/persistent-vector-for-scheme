@@ -57,7 +57,7 @@ will document this. I will write more tests.
      going to the end of the vector.
 *(vector*+->+*pvec _vector_ _start_ _end_)*:: Make a persistent vector
      from the elements of the given vector, starting at index _start_
-     and going to index _end{nbsp}pass:[&#8722;]{nbsp}1_.
+     and going to index _end{nbsp}−{nbsp}1_.
 *(generator*+->+*pvec _generator_)*:: Make a persistent vector from
      the elements returned by a SRFI-158-style generator.
 *(generator*+->+*pvec _generator_ _k_)*:: Make a persistent vector
@@ -74,7 +74,7 @@ will document this. I will write more tests.
      to the end of the vector.
 *(pvec*+->+*list _pvec_ _start_ _end_)*:: Make a list from the
      elements of the given vector, starting at index _start_ and going
-     to index _end{nbsp}pass:[&#8722;]{nbsp}1_.
+     to index _end{nbsp}−{nbsp}1_.
 *(pvec*+->+*vector _pvec_)*:: Make a vector from the elements of the
      given persistent vector.
 *(pvec*+->+*vector _pvec_ _start_)*:: Make a vector from the elements
@@ -82,7 +82,7 @@ will document this. I will write more tests.
      going to the end of the vector.
 *(pvec*+->+*vector _pvec_ _start_ _end_)*:: Make a vector from the
      elements of the given vector, starting at index _start_ and going
-     to index _end{nbsp}pass:[&#8722;]{nbsp}1_.
+     to index _end{nbsp}−{nbsp}1_.
 *(pvec*+->+*generator _pvec_)*:: Make a generator from the elements of
      the given persistent vector.
 *(pvec*+->+*generator _pvec_ _start_)*:: Make a generator from the
@@ -90,4 +90,23 @@ will document this. I will write more tests.
      _start_ and going to the end of the vector.
 *(pvec*+->+*generator _pvec_ _start_ _end_)*:: Make a generator from
      the elements of the given vector, starting at index _start_ and
-     going to index _end{nbsp}pass:[&#8722;]{nbsp}1_.
+     going to index _end{nbsp}−{nbsp}1_.
+
+=== Type predicate
+
+*(pvec? _object_)*:: Is _object_ a _pvec_ persistent vector? *#t* or
+     *#f*
+
+=== Structure properties
+
+*(pvec-length _pvec_)*:: Return the number of elements in the
+     persistent vector.
+
+=== Vector operations
+
+*(pvec-ref _pvec_ _i_)*:: Return the __i__ th element of the
+     persistent vector.
+*(pvec-set _pvec_ _i_ _x_)*:: Return a new persistent vector whose
+     elements are the same as those of _pvec_, except that the
+     __i__ th element has the value{nbsp}__x__. The new vector may
+     share structure with _pvec_.
