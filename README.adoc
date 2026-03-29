@@ -64,3 +64,30 @@ will document this. I will write more tests.
      from the elements returned by at most the first _k_ elements
      returned by a SRFI-158-style generator. (Thus the generator may
      be an infinite generator.)
+
+=== Reverse constructors
+
+*(pvec*+->+*list _pvec_)*:: Make a list from the elements of the given
+     persistent vector.
+*(pvec*+->+*list _pvec_ _start_)*:: Make a list from the elements of
+     the given persistent vector, starting at index _start_ and going
+     to the end of the vector.
+*(pvec*+->+*list _pvec_ _start_ _end_)*:: Make a list from the
+     elements of the given vector, starting at index _start_ and going
+     to index _end{nbsp}pass:[&#8722;]{nbsp}1_.
+*(pvec*+->+*vector _pvec_)*:: Make a vector from the elements of the
+     given persistent vector.
+*(pvec*+->+*vector _pvec_ _start_)*:: Make a vector from the elements
+     of the given persistent vector, starting at index _start_ and
+     going to the end of the vector.
+*(pvec*+->+*vector _pvec_ _start_ _end_)*:: Make a vector from the
+     elements of the given vector, starting at index _start_ and going
+     to index _end{nbsp}pass:[&#8722;]{nbsp}1_.
+*(pvec*+->+*generator _pvec_)*:: Make a generator from the elements of
+     the given persistent vector.
+*(pvec*+->+*generator _pvec_ _start_)*:: Make a generator from the
+     elements of the given persistent vector, starting at index
+     _start_ and going to the end of the vector.
+*(pvec*+->+*generator _pvec_ _start_ _end_)*:: Make a generator from
+     the elements of the given vector, starting at index _start_ and
+     going to index _end{nbsp}pass:[&#8722;]{nbsp}1_.
