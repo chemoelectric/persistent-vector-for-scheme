@@ -18,41 +18,6 @@
     ((vec)
      (vector->generator vec 0 (vector-length vec)))))
 
-(test-equal 0 (pvec-length (pvec)))
-(test-equal 0 (pvec-length (list->pvec '())))
-(test-equal 0 (pvec-length (vector->pvec '#())))
-(test-equal 0 (pvec-length (generator->pvec (lambda () (eof-object)))))
-(test-equal 0 (pvec-length (pvec-pop (pvec) 0)))
-(test-equal 0 (pvec-length (pvec-push (pvec))))
-(test-equal 0 (pvec-length (pvec-pop (pvec) 0)))
-(test-equal 0 (pvec-length (pvec-pushes (pvec) '#())))
-(test-equal 0 (pvec-length (pvec-pushes (pvec) '#(1 2 3) 3)))
-(test-equal 0 (pvec-length (pvec-pushes (pvec) '#(1 2 3) 2 2)))
-(test-equal 0 (pvec-length (pvec-pop (list->pvec (iota 1000)) 1000)))
-(test-equal 0 (pvec-length (pvec-pop (pvec-pushes (list->pvec (iota 1000))
-                                                  '#(1 2 3 4 5))
-                                     1005)))
-(test-equal 0 (pvec-length (generator->pvec (lambda () 1) 0)))
-
-(test-equal 5 (pvec-length (pvec 1 2 3 4 5)))
-(test-equal 1000 (pvec-length (list->pvec (iota 1000))))
-(test-equal 5 (pvec-length (pvec-pop (list->pvec (iota 1005)) 1000)))
-
-(test-equal 5 (pvec-length (vector->pvec '#(1 2 3 4 5))))
-(test-equal 1000 (pvec-length (vector->pvec (list->vector (iota 1000)))))
-(test-equal 5 (pvec-length (vector->pvec (list->vector (iota 1000)) 995)))
-(test-equal 5 (pvec-length (vector->pvec (list->vector (iota 1000)) 900 905)))
-
-(test-equal 5 (pvec-length (generator->pvec (lambda () 1) 5)))
-(test-equal '#(1 1 1 1 1) (pvec-refs (generator->pvec (lambda () 1) 5)))
-(test-equal '#(1 1 1 1 1) (pvec->vector (generator->pvec (lambda () 1) 5)))
-(test-equal 1000 (pvec-length (generator->pvec
-                               (vector->generator
-                                (vector-ec (:range i 1000) i)))))
-(test-equal (vector-ec (:range i 1000) i)
-  (pvec-refs (generator->pvec (vector->generator
-                               (vector-ec (:range i 1000) i)))))
-
 (let ((v (pvec 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16
                17 18 19 20 21 22 23 24 25 26 27 28 29
                30 31 32 33 34 35 36 37 38 39 40 41 42
@@ -94,19 +59,58 @@
       (test-equal (+ i 1) (pvec-ref v2 i)))
     ))
 
+(test-equal 0 (pvec-length (pvec)))
+(test-equal 0 (pvec-length (list->pvec '())))
+(test-equal 0 (pvec-length (vector->pvec '#())))
+(test-equal 0 (pvec-length (generator->pvec (lambda () (eof-object)))))
+(test-equal 0 (pvec-length (pvec-pop (pvec) 0)))
+(test-equal 0 (pvec-length (pvec-push (pvec))))
+(test-equal 0 (pvec-length (pvec-pop (pvec) 0)))
+(test-equal 0 (pvec-length (pvec-pushes (pvec) '#())))
+(test-equal 0 (pvec-length (pvec-pushes (pvec) '#(1 2 3) 3)))
+(test-equal 0 (pvec-length (pvec-pushes (pvec) '#(1 2 3) 2 2)))
+(test-equal 0 (pvec-length (pvec-pop (list->pvec (iota 1000)) 1000)))
+(test-equal 0 (pvec-length (pvec-pop (pvec-pushes (list->pvec (iota 1000))
+                                                  '#(1 2 3 4 5))
+                                     1005)))
+(test-equal 0 (pvec-length (generator->pvec (lambda () 1) 0)))
 
+(test-equal 5 (pvec-length (pvec 1 2 3 4 5)))
+(test-equal 1000 (pvec-length (list->pvec (iota 1000))))
+(test-equal 5 (pvec-length (pvec-pop (list->pvec (iota 1005)) 1000)))
 
-(test-equal '(5 4 3 2 1 0)
-  (pvec-fold cons '(0) (pvec 1 2 3 4 5)))
+(test-equal 5 (pvec-length (vector->pvec '#(1 2 3 4 5))))
+(test-equal 1000 (pvec-length (vector->pvec (list->vector (iota 1000)))))
+(test-equal 5 (pvec-length (vector->pvec (list->vector (iota 1000)) 995)))
+(test-equal 5 (pvec-length (vector->pvec (list->vector (iota 1000)) 900 905)))
 
-(test-equal '(c 3 b 2 a 1)
-  (pvec-fold cons* '() (pvec 'a 'b 'c) (pvec 1 2 3 4 5)))
+(test-equal 5 (pvec-length (generator->pvec (lambda () 1) 5)))
+(test-equal '#(1 1 1 1 1) (pvec-refs (generator->pvec (lambda () 1) 5)))
+(test-equal '#(1 1 1 1 1) (pvec->vector (generator->pvec (lambda () 1) 5)))
+(test-equal 1000 (pvec-length (generator->pvec
+                               (vector->generator
+                                (vector-ec (:range i 1000) i)))))
+(test-equal (vector-ec (:range i 1000) i)
+  (pvec-refs (generator->pvec (vector->generator
+                               (vector-ec (:range i 1000) i)))))
 
-(test-equal '(1 2 3 4 5 6)
-  (pvec-fold-right cons '(6) (pvec 1 2 3 4 5)))
+(test-equal (iota 300) (pvec->list (pvec-ec (:range i 300) i)))
+(test-equal (iota 200 100) (pvec->list (pvec-ec (:range i 100 300) i)))
+(test-equal (iota 100 100 2) (pvec->list (pvec-ec (:range i 100 300 2) i)))
+(test-equal (list->vector (iota 300)) (pvec->vector (pvec-ec (:range i 300) i)))
+(test-equal (list->vector (iota 200 100)) (pvec->vector (pvec-ec (:range i 100 300) i)))
+(test-equal (list->vector (iota 100 100 2)) (pvec->vector (pvec-ec (:range i 100 300 2) i)))
+(test-equal (list->vector (iota 300)) (pvec-refs (pvec-ec (:range i 300) i)))
+(test-equal (list->vector (iota 200 100)) (pvec-refs (pvec-ec (:range i 100 300) i)))
+(test-equal (list->vector (iota 100 100 2)) (pvec-refs (pvec-ec (:range i 100 300 2) i)))
+(test-equal (iota 300) (list-ec (:generator j (pvec->generator (pvec-ec (:range i 300) i))) j))
+(test-equal (iota 200 100) (list-ec (:generator j (pvec->generator (pvec-ec (:range i 100 300) i))) j))
+(test-equal (iota 100 100 2) (list-ec (:generator j (pvec->generator (pvec-ec (:range i 100 300 2) i))) j))
 
-(test-equal '(a 1 b 2 c 3)
-  (pvec-fold-right cons* '() (pvec 'a 'b 'c) (pvec 1 2 3 4 5)))
+(test-equal '(5 4 3 2 1 0) (pvec-fold cons '(0) (pvec 1 2 3 4 5)))
+(test-equal '(c 3 b 2 a 1) (pvec-fold cons* '() (pvec 'a 'b 'c) (pvec 1 2 3 4 5)))
+(test-equal '(1 2 3 4 5 6) (pvec-fold-right cons '(6) (pvec 1 2 3 4 5)))
+(test-equal '(a 1 b 2 c 3) (pvec-fold-right cons* '() (pvec 'a 'b 'c) (pvec 1 2 3 4 5)))
 
 (display successes)
 (display " successes\n")
