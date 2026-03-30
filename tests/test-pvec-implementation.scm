@@ -32,6 +32,26 @@
 (test-equal 0 (pvec-length (pvec-pop (pvec-pushes (list->pvec (iota 1000))
                                                   '#(1 2 3 4 5))
                                      1005)))
+(test-equal 0 (pvec-length (generator->pvec (lambda () 1) 0)))
+
+(test-equal 5 (pvec-length (pvec 1 2 3 4 5)))
+(test-equal 1000 (pvec-length (list->pvec (iota 1000))))
+(test-equal 5 (pvec-length (pvec-pop (list->pvec (iota 1005)) 1000)))
+
+(test-equal 5 (pvec-length (vector->pvec '#(1 2 3 4 5))))
+(test-equal 1000 (pvec-length (vector->pvec (list->vector (iota 1000)))))
+(test-equal 5 (pvec-length (vector->pvec (list->vector (iota 1000)) 995)))
+(test-equal 5 (pvec-length (vector->pvec (list->vector (iota 1000)) 900 905)))
+
+(test-equal 5 (pvec-length (generator->pvec (lambda () 1) 5)))
+(test-equal '#(1 1 1 1 1) (pvec-refs (generator->pvec (lambda () 1) 5)))
+(test-equal '#(1 1 1 1 1) (pvec->vector (generator->pvec (lambda () 1) 5)))
+(test-equal 1000 (pvec-length (generator->pvec
+                               (vector->generator
+                                (vector-ec (:range i 1000) i)))))
+(test-equal (vector-ec (:range i 1000) i)
+  (pvec-refs (generator->pvec (vector->generator
+                               (vector-ec (:range i 1000) i)))))
 
 (let ((v (pvec 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16
                17 18 19 20 21 22 23 24 25 26 27 28 29
