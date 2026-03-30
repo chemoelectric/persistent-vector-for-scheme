@@ -16,6 +16,11 @@ m4_changequote(“,”)m4_changecom“”m4_dnl
   (loko (import (srfi :1 lists)))
   (else (import (srfi srfi-1))))
 (cond-expand
+  (chicken-5 (import (srfi 27)))
+  ((library (srfi 27)) (import (srfi 27)))
+  (loko (import (srfi :27 random-bits)))
+  (else (import (srfi srfi-27))))
+(cond-expand
   (chicken-5 (import (srfi 143)))
   ((library (scheme fixnum)) (import (scheme fixnum)))
   ((library (srfi 143)) (import (srfi 143)))

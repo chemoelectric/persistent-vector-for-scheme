@@ -10,6 +10,7 @@ m4_changequote(“,”)m4_changecom“”m4_dnl
         (rnrs io simple (6))
         (rnrs r5rs (6))
         (srfi :1 lists)
+        (srfi :27 random-bits)
         (srfi :143 fixnums)
         (pvec)
         (pvec eager-comprehensions))

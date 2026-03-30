@@ -18,6 +18,15 @@
     ((vec)
      (vector->generator vec 0 (vector-length vec)))))
 
+(define (shuffle vec)
+  (let ((n (vector-length vec)))
+    (do-ec (nested (:range i+1 n 1 -1)
+                   (:let i (- i+1 1))
+                   (:let j (random-integer i+1)))
+      (let ((temp (vector-ref vec i)))
+        (vector-set! vec i (vector-ref vec j))
+        (vector-set! vec j temp)))))
+      
 (let ((v (pvec 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16
                17 18 19 20 21 22 23 24 25 26 27 28 29
                30 31 32 33 34 35 36 37 38 39 40 41 42
@@ -111,6 +120,31 @@
 (test-equal '(c 3 b 2 a 1) (pvec-fold cons* '() (pvec 'a 'b 'c) (pvec 1 2 3 4 5)))
 (test-equal '(1 2 3 4 5 6) (pvec-fold-right cons '(6) (pvec 1 2 3 4 5)))
 (test-equal '(a 1 b 2 c 3) (pvec-fold-right cons* '() (pvec 'a 'b 'c) (pvec 1 2 3 4 5)))
+
+(test-assert (pvec? (pvec)))
+(test-assert (not (pvec? 1)))
+(test-assert (not (pvec? #f)))
+(test-assert (not (pvec? "pvec")))
+
+(let ((pv (pvec-ec (:range i 1000) (number->string i 16))))
+  (do-ec (:range i 1000) (test-equal (number->string i 16) (pvec-ref pv i)))
+  (test-equal (vector-ec (:range i 1000) (number->string i 16)) (pvec-refs pv))
+  (test-equal (vector-ec (:range i 500) (number->string i 16)) (pvec-refs pv 0 500))
+  (test-equal (vector-ec (:range i 500 1000) (number->string i 16)) (pvec-refs pv 500 1000)))
+
+(let ((pv (pvec-ec (:range i 1000) (number->string i 16))))
+  (do-ec (:range i 1000) (set! pv (pvec-set pv i (number->string i 8))))
+  (do-ec (:range i 1000) (test-equal (number->string i 8) (pvec-ref pv i))))
+
+(let ((pv (pvec-ec (:range i 1000) (number->string i 16))))
+  (do-ec (:range i 1000) (set! pv (pvec-set pv (fx- 999 i) (number->string i 8))))
+  (do-ec (:range i 1000) (test-equal (number->string i 8) (pvec-ref pv (fx- 999 i)))))
+
+(let ((pv (pvec-ec (:range i 1000) (number->string i 16)))
+      (vec (vector-ec (:range i 1000) i)))
+  (shuffle vec)
+  (do-ec (:range i 1000) (set! pv (pvec-set pv (vector-ref vec i) (number->string i 8))))
+  (do-ec (:range i 1000) (test-equal (number->string i 8) (pvec-ref pv (vector-ref vec i)))))
 
 (display successes)
 (display " successes\n")
