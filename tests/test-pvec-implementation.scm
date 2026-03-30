@@ -18,6 +18,21 @@
     ((vec)
      (vector->generator vec 0 (vector-length vec)))))
 
+(test-equal 0 (pvec-length (pvec)))
+(test-equal 0 (pvec-length (list->pvec '())))
+(test-equal 0 (pvec-length (vector->pvec '#())))
+(test-equal 0 (pvec-length (generator->pvec (lambda () (eof-object)))))
+(test-equal 0 (pvec-length (pvec-pop (pvec) 0)))
+(test-equal 0 (pvec-length (pvec-push (pvec))))
+(test-equal 0 (pvec-length (pvec-pop (pvec) 0)))
+(test-equal 0 (pvec-length (pvec-pushes (pvec) '#())))
+(test-equal 0 (pvec-length (pvec-pushes (pvec) '#(1 2 3) 3)))
+(test-equal 0 (pvec-length (pvec-pushes (pvec) '#(1 2 3) 2 2)))
+(test-equal 0 (pvec-length (pvec-pop (list->pvec (iota 1000)) 1000)))
+(test-equal 0 (pvec-length (pvec-pop (pvec-pushes (list->pvec (iota 1000))
+                                                  '#(1 2 3 4 5))
+                                     1005)))
+
 (let ((v (pvec 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16
                17 18 19 20 21 22 23 24 25 26 27 28 29
                30 31 32 33 34 35 36 37 38 39 40 41 42
