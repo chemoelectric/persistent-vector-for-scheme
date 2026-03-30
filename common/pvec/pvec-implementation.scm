@@ -336,7 +336,7 @@
           ;; There is room in the tail for all the objects to be
           ;; pushed.
           (let ((tail (vector-copy tail))
-                (i len))
+                (i n-tail))
             (do-ec (:list x x*)
               (begin
                 (vector-set! tail i x)
