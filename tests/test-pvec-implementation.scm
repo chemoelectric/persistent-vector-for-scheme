@@ -275,6 +275,19 @@
 (test-equal '(1 2 3 4 5 6) (pvec-fold-right cons '(6) (pvec 1 2 3 4 5)))
 (test-equal '(a 1 b 2 c 3) (pvec-fold-right cons* '() (pvec 'a 'b 'c) (pvec 1 2 3 4 5)))
 
+(test-equal (iota 1000) (list-ec (:pvec i (list->pvec (iota 1000))) i))
+(test-equal (iota 1000) (list-ec (:pvec i (list->pvec (iota 250))
+                                        (list->pvec (iota 250 250))
+                                        (list->pvec (iota 250 500))
+                                        (list->pvec (iota 250 750))) i))
+
+(test-equal (iota 1000) (list-ec (:generator i (vector->generator (list->vector (iota 250)))
+                                             (vector->generator (list->vector (iota 250 250)))
+                                             (vector->generator (list->vector (iota 250 500)))
+                                             (vector->generator (list->vector (iota 250 750)))) i))
+
+(test-equal (iota 1000) (pvec->list (pvec-ec (:pvec i (list->pvec (iota 1000))) i)))
+
 (display successes)
 (display " successes\n")
 (display failures)
