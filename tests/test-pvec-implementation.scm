@@ -213,6 +213,68 @@
       (pvec->vector pv j))
     ))
 
+(let ((pv (pvec))
+      (lst (iota 10000)))
+  (do-ec (:range i 10000) (set! pv (pvec-push pv i)))
+  (test-equal lst (pvec->list pv))
+  (set! pv (pvec-push pv 1 2 3 4 5 6 7 8 9 10))
+  (set! lst (append! lst (list 1 2 3 4 5 6 7 8 9 10)))
+  (test-equal lst (pvec->list pv)))
+
+(let ((pv (pvec-push (pvec) 1 2 3 4 5 6 7 8 9 10))
+      (lst (list 1 2 3 4 5 6 7 8 9 10))
+      (iota1000 (iota 1000)))
+  (test-equal lst (pvec->list pv))
+  (set! pv (pvec-pushes pv iota1000))
+  (set! lst (append! lst iota1000))
+  (test-equal lst (pvec->list pv)))
+
+(let ((pv (pvec-push (pvec) 1 2 3 4 5 6 7 8 9 10))
+      (lst (list 1 2 3 4 5 6 7 8 9 10))
+      (iota1000 (iota 1000)))
+  (test-equal lst (pvec->list pv))
+  (set! pv (pvec-pushes pv (list->vector iota1000)))
+  (set! lst (append! lst iota1000))
+  (test-equal lst (pvec->list pv)))
+
+(let ((pv (pvec-push (pvec) 1 2 3 4 5 6 7 8 9 10))
+      (lst (list 1 2 3 4 5 6 7 8 9 10))
+      (iota1000 (iota 1000)))
+  (test-equal lst (pvec->list pv))
+  (set! pv (pvec-pushes pv (list->vector iota1000) 500))
+  (set! lst (append! lst (drop iota1000 500)))
+  (test-equal lst (pvec->list pv)))
+
+(let ((pv (pvec-push (pvec) 1 2 3 4 5 6 7 8 9 10))
+      (lst (list 1 2 3 4 5 6 7 8 9 10))
+      (iota1000 (iota 1000)))
+  (test-equal lst (pvec->list pv))
+  (set! pv (pvec-pushes pv (list->vector iota1000) 5 500))
+  (set! lst (append! lst (drop (take iota1000 500) 5)))
+  (test-equal lst (pvec->list pv)))
+
+(let ((pv (pvec-ec (:range i 10000) i)))
+  (do-ec
+   (:range i 10000)
+   (begin
+     (when (fxzero? (random-integer 10))
+       (test-equal (iota (- 10000 i)) (pvec->list pv)))
+     (set! pv (pvec-pop pv)))))
+
+(let ((pv (pvec-ec (:range i 10000) i)))
+  (do-ec
+   (:range i 0 10000 10)
+   (begin
+     (test-equal (iota (- 10000 i)) (pvec->list pv)))
+     (set! pv (pvec-pop pv 10))))
+
+(let ((pv (pvec-ec (:range i 10000) i)))
+  (do-ec
+   (:range i 0 10000 100)
+   (begin
+     (test-equal (iota (- 10000 i)) (pvec->list pv)))
+     (set! pv (pvec-pop pv 100))))
+
 (display successes)
 (display " successes\n")
 (display failures)

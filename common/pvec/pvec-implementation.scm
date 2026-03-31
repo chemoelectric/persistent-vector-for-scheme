@@ -475,9 +475,11 @@
          (tail (pvec-tail v))
          (n-tail (tail-length len)))
     (if (fx<? n n-tail)
-      (construct-pvec (fx- len n) shift node
-                      ;; Simply shorten the current tail.
-                      (free-unused-objects tail (fx- len n)))
+      (let* ((new-length (fx- len n))
+             (new-n-tail (tail-length new-length)))
+        ;; Simply shorten the current tail.
+        (construct-pvec new-length shift node
+                        (free-unused-objects tail new-n-tail)))
       (pvec-pop-requiring-a-new-tail v n len shift node tail))))
 
 (define (pvec-pop-requiring-a-new-tail v n len shift node tail)
@@ -512,7 +514,9 @@
           (new-node (vector-copy node)))
       ;;
       ;; Prune discarded entries.
-      (vector-fill! new-node #f (fx+ j 1))
+      (let ((j+1 (fx+ j 1)))
+        (when (fx<? j+1 (node-size))
+          (vector-fill! new-node #f j+1)))
       ;;
       (make-pruned-path (fx- shift (bits))
                         (vector-ref node j) i
