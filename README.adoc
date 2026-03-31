@@ -37,9 +37,11 @@ complexity, so were it up to me they would have been removed from
 SRFI-42. Just do not use them. I implement them merely because one is
 supposed to.]
 
-* There is testing for the above, and also for Chibi Scheme, Loko Scheme
-(both R⁶RS and R⁷RS), and Sagittarius Scheme (both R⁶RS and R⁷RS). I
-will document this. I will write more tests.
+* There is testing for the above, and also for Chibi Scheme, Loko
+Scheme (both R⁶RS and R⁷RS), and Sagittarius Scheme (both R⁶RS and
+R⁷RS). I will document this. In particular, the default ‘make’ target
+is to run the tests for all the supported Scheme implementations. The
+tests may be run in parallel with the ‘-j’ option of GNU Make.
 
 == Programming interface footnote:[Indices are zero-based.]
 
