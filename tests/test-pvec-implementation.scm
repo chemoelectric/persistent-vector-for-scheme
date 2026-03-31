@@ -155,7 +155,7 @@
   (test-equal vec (pvec->vector pv)))
 
 (do ((n 1 (+ n 1)))
-    ((= n 11))
+    ((= n 101))
   (let ((pv (pvec-ec (:range i 10000) (number->string i 16)))
         (vec (vector-ec (:range i 10000) i)))
     (let ((j (random-integer 10000)))
@@ -175,7 +175,7 @@
       )))
 
 (do ((n 1 (+ n 1)))
-    ((= n 11))
+    ((= n 101))
   (let ((pv (pvec-ec (:range i 10000) (number->string i 16)))
         (vec (vector-ec (:range i 10000) i)))
     (let ((j (random-integer 10000)))
