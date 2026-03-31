@@ -116,11 +116,6 @@
 (test-equal (iota 200 100) (list-ec (:generator j (pvec->generator (pvec-ec (:range i 100 300) i))) j))
 (test-equal (iota 100 100 2) (list-ec (:generator j (pvec->generator (pvec-ec (:range i 100 300 2) i))) j))
 
-(test-equal '(5 4 3 2 1 0) (pvec-fold cons '(0) (pvec 1 2 3 4 5)))
-(test-equal '(c 3 b 2 a 1) (pvec-fold cons* '() (pvec 'a 'b 'c) (pvec 1 2 3 4 5)))
-(test-equal '(1 2 3 4 5 6) (pvec-fold-right cons '(6) (pvec 1 2 3 4 5)))
-(test-equal '(a 1 b 2 c 3) (pvec-fold-right cons* '() (pvec 'a 'b 'c) (pvec 1 2 3 4 5)))
-
 (test-assert (pvec? (pvec)))
 (test-assert (not (pvec? 1)))
 (test-assert (not (pvec? #f)))
@@ -274,6 +269,11 @@
    (begin
      (test-equal (iota (- 10000 i)) (pvec->list pv)))
      (set! pv (pvec-pop pv 100))))
+
+(test-equal '(5 4 3 2 1 0) (pvec-fold cons '(0) (pvec 1 2 3 4 5)))
+(test-equal '(c 3 b 2 a 1) (pvec-fold cons* '() (pvec 'a 'b 'c) (pvec 1 2 3 4 5)))
+(test-equal '(1 2 3 4 5 6) (pvec-fold-right cons '(6) (pvec 1 2 3 4 5)))
+(test-equal '(a 1 b 2 c 3) (pvec-fold-right cons* '() (pvec 'a 'b 'c) (pvec 1 2 3 4 5)))
 
 (display successes)
 (display " successes\n")
