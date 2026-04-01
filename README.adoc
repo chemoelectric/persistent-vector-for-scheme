@@ -52,11 +52,11 @@ Gauche Scheme, CHICKEN 5, and CHICKEN 6.
   install-gauche*{nbsp}. You can uninstall by running *make
   uninstall-gauche*{nbsp}.
 
-* To install an egg for CHICKEN 5 or CHICKEN 6, edit the GNUmakefile
-  to set _CHICKEN_5_SUDO_, _CHICKEN_6_SUDO_, and the CHICKEN tools as
-  needed. Then run *make install-chicken-5-egg* or *make
-  install-chicken-6-egg*{nbsp}. You can uninstall the egg by running
-  *make uninstall-chicken-5-egg* or
+* To install a *pvec* egg for CHICKEN 5 or CHICKEN 6, edit the
+  GNUmakefile to set _CHICKEN_5_SUDO_, _CHICKEN_6_SUDO_, and the
+  CHICKEN tools as needed. Then run *make install-chicken-5-egg* or
+  *make install-chicken-6-egg*{nbsp}. You can uninstall the egg by
+  running *make uninstall-chicken-5-egg* or
   *make-uninstall-chicken-6-egg*{nbsp}. There are also targets to make
   source tarballs of the CHICKEN eggs.
 
