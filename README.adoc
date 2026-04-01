@@ -62,11 +62,14 @@ Gauche Scheme, CHICKEN 5, and CHICKEN 6.
 
 == Testing
 
-* There is testing for the above, and also for Chibi Scheme, Loko
-Scheme (both R⁶RS and R⁷RS), and Sagittarius Scheme (both R⁶RS and
-R⁷RS). I will document this. In particular, the default ‘make’ target
-is to run the tests for all the supported Scheme implementations. The
-tests may be run in parallel, if you use the ‘-j’ option of GNU Make.
+There is regression testing for several Scheme implementations. The
+GNUmakefile targets are *check-chez-r6rs*, *check-chibi-r7rs*,
+*check-gauche-r7rs*, *check-loko-r6rs*, *check-loko-r7rs*,
+*check-sagittarius-r6rs*, *check-sagittarius-r7rs*,
+*check-chicken-5-r7rs*, and *check-chicken-6-r7rs*{nbsp}. There is
+also a *check-all-scheme-implementations* target that can be run as a
+parallel make job, and which is the default target for the
+GNUmakefile.
 
 == Programming interface footnote:[Indices are zero-based.]
 
