@@ -197,7 +197,7 @@
     ((v x)
      (let ((len (pvec-length v)))
        (if (fxzero? len)
-         ;; The vector is empty; create a tail for it.
+         ;; The persistent vector is empty; create a tail for it.
          (construct-pvec 1 0 #f (new-leaf x))
          (let ((shift (pvec-shift v))
                (node (pvec-node v))
@@ -257,7 +257,7 @@
                        source start (vector-length source))))
             (pvec-pushes-from-generator v gen!)))
          ((procedure? source)
-          ;; Really ‘start’ is a limit on how long to run the
+          ;; ‘start’ is actually a limit on how long to run the
           ;; generator.
           (let ((j start))
             (when (negative? j)
@@ -265,9 +265,11 @@
             (let ((gen! (lambda ()
                           (if (zero? j)
                             (eof-object)
-                            (begin
-                              (set! j (- j 1))
-                              (source))))))
+                            (let ((result (source)))
+                              (set! j (if (eof-object? result)
+                                        0
+                                        (- j 1)))
+                              result)))))d
               (pvec-pushes-from-generator v gen!))))
          (else
           (error bad-source-message source))))
