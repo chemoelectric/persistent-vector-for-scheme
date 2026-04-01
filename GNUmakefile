@@ -274,7 +274,8 @@ chicken-5/pvec.egg: GNUmakefile \
 	  print " (author \"Barry Schwartz\")"; \
 	  print " (dependencies r7rs srfi-1 srfi-42 srfi-143)"; \
 	  print " (component-options"; \
-	  print "  (csc-options \"-X\" \"r7rs\" \"-R\" \"r7rs\" \"-O3\"))"; \
+	  print "  (csc-options \"-X\" \"r7rs\" \"-R\" \"r7rs\""; \
+	  print "               \"-O4\" \"-C\" \"-O3\"))"; \
 	  print " (components"; \
 	  print "  (extension pvec.srfi-42"; \
 	  print "   (source \"pvec/srfi-42.sld\"))"; \
@@ -368,7 +369,7 @@ chicken-6/pvec.egg: GNUmakefile \
 	  print " (license \"MIT\")"; \
 	  print " (author \"Barry Schwartz\")"; \
 	  print " (dependencies srfi-1 srfi-42 srfi-143)"; \
-	  print " (component-options (csc-options \"-O3\"))"; \
+	  print " (component-options (csc-options \"-O4\" \"-C\" \"-O3\"))"; \
 	  print " (components"; \
 	  print "  (extension pvec.srfi-42"; \
 	  print "   (source \"pvec/srfi-42.sld\"))"; \
