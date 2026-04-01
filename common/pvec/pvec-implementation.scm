@@ -269,7 +269,7 @@
                               (set! j (if (eof-object? result)
                                         0
                                         (- j 1)))
-                              result)))))d
+                              result)))))
               (pvec-pushes-from-generator v gen!))))
          (else
           (error bad-source-message source))))
@@ -720,15 +720,24 @@
   (case-lambda
     ((v i x)
      (let ((len (vector-length x)))
+       (check-i i x (fx- len i))
        (copy-to-pvec v i x 0 len)))
     ((v i x start)
      (let ((len (vector-length x)))
+       (check-i i x (fx- len start))
        (check-indexes x start len)
        (copy-to-pvec v i x start (fx- len start))))
     ((v i x start end)
      (let ((len (vector-length x)))
+       (check-i i x (fx- end start))
        (check-indexes x start end len)
        (copy-to-pvec v i x start (fx- end start))))))
+
+(define (check-i i x room)
+  (when (fxnegative? i)
+    (error "index must be non-negative" i))
+  (when (fxnegative? room)
+    (error "there is not enough room for this pvec-sets" i)))
 
 (define (copy-to-pvec v i w j n)
   ;; Copy n entries to the persistent vector v, starting at i, from
