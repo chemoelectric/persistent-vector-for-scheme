@@ -6,25 +6,26 @@
 
 VERSION = 0.0.0
 
-CHEZSCHEME_INSTALLDIR = ~/.local/lib/chezscheme
-#CHEZ_SUDO = $(SUDO)
-CHEZ_SUDO =
-
-GAUCHE_INSTALLDIR = $(shell gauche-config --sitelibdir)
-GAUCHE_SUDO = $(SUDO)
-#GAUCHE_SUDO =
-
 include silent-rules.mk
 DEFAULT_VERBOSITY = 0
 
-# GNU or OpenBSD m4.
-GNULIKE_M4 = m4 -P -I $(PWD)
+CHEZSCHEME_INSTALLDIR = ~/.local/lib/chezscheme
+GAUCHE_INSTALLDIR = $(shell gauche-config --sitelibdir)
 
 # OpenBSD doas is simpler than sudo, is easily made a static
 # executable if you do not need it to use PAM, and doas will work
 # here. Incidentally, there is also a shim to make doas your
 # mostly-compatible ‘sudo’ command.
 SUDO = doas
+
+# What to use for SUDO for when installing for various Schemes.
+CHEZ_SUDO =			# No SUDO.
+GAUCHE_SUDO = $(SUDO)
+CHICKEN_5_SUDO = $(SUDO)
+CHICKEN_6_SUDO = $(SUDO)
+
+# GNU or OpenBSD m4.
+GNULIKE_M4 = m4 -P -I $(PWD)
 
 TAR = tar
 XZ = xz
@@ -310,12 +311,12 @@ pvec-$(EGG_5_VERSION).chicken-5-egg.tar.xz: clean-chicken-5
 install-chicken-5-egg: chicken-5/pvec.egg
 	$(call v,CHICKEN-INSTALL-5)( \
 	  cd chicken-5 && \
-	  $(CHICKEN_INSTALL_5) -s \
+	  SUDO=$(CHICKEN_5_SUDO) $(CHICKEN_INSTALL_5) -s \
 	)
 uninstall-chicken-5-egg: chicken-5/pvec.egg
 	$(call v,CHICKEN-UNINSTALL-5)( \
 	  cd chicken-5 && \
-	  $(CHICKEN_UNINSTALL_5) -force -s pvec \
+	  SUDO=$(CHICKEN_5_SUDO) $(CHICKEN_UNINSTALL_5) -force -s pvec \
 	)
 
 clean-chicken-5:
@@ -404,12 +405,12 @@ pvec-$(EGG_6_VERSION).chicken-6-egg.tar.xz: clean-chicken-6
 install-chicken-6-egg: chicken-6/pvec.egg
 	$(call v,CHICKEN-INSTALL-6)( \
 	  cd chicken-6 && \
-	  $(CHICKEN_INSTALL_6) -s \
+	  SUDO=$(CHICKEN_6_SUDO) $(CHICKEN_INSTALL_6) -s \
 	)
 uninstall-chicken-6-egg: chicken-6/pvec.egg
 	$(call v,CHICKEN-UNINSTALL-6)( \
 	  cd chicken-6 && \
-	  $(CHICKEN_UNINSTALL_6) -force -s pvec \
+	  SUDO=$(CHICKEN_6_SUDO) $(CHICKEN_UNINSTALL_6) -force -s pvec \
 	)
 
 clean-chicken-6:

@@ -22,13 +22,13 @@ some similar way to execute a command with superuser privileges.
 However, of course, feel free to modify the GNUmakefile or not use it
 at all. One can use a text editor or Awk instead of M4, for instance.
 
-* There is installation for Chez Scheme, Gauche Scheme, CHICKEN 5, and
-CHICKEN 6, which I will document. You may need chez-srfi, CHICKEN
-eggs, etc.footnote:[The code is primarily for R⁷RS, with R⁶RS support
-to the degree Scheme code of any variety can be tolerated by it. In
-particular, I export partial implementation of SRFI-42, but find that
-SRFI-42 ‘index’ variables are unreliable in at least Chez Scheme. This
-is so, even though I include my own copy of the reference
+You may have to install
+chez-srfi,footnote:chez-srfi[https://github.com/arcfide/chez-srfi]
+CHICKEN eggs, etc.footnote:[The code is primarily for R⁷RS, with R⁶RS
+support to the degree Scheme code of any variety can be tolerated
+by it. In particular, I export partial implementation of SRFI-42, but
+find that SRFI-42 ‘index’ variables are unreliable in at least Chez
+Scheme. This is so, even though I include my own copy of the reference
 implementation (mainly because too many other SRFI-42 libraries have
 their ability to be extended broken). Only for Chibi and CHICKEN do I
 use what ‘comes with’ the compiler/interpreter. However, ‘index’
@@ -36,6 +36,31 @@ variables are redundant with ‘:parallel’ constructs, and are a nasty
 complexity, so were it up to me they would have been removed from
 SRFI-42. Just do not use them. I implement them merely because one is
 supposed to.]
+
+== Installation
+
+Currently there are GNUmakefile installation targets for Chez Scheme,
+Gauche Scheme, CHICKEN 5, and CHICKEN 6.
+
+* To install for Chez Scheme, edit the GNUmakefile to set
+  _CHEZSCHEME_INSTALLDIR_ and _CHEZ_SUDO_ as needed. Then run *make
+  install-chez*{nbsp}. You can uninstall by running *make
+  uninstall-chez*{nbsp}.
+
+* To install for Gauche Scheme, edit the GNUmakefile to set
+  _GAUCHE_INSTALLDIR_ and _GAUCHE_SUDO_ as needed. Then run *make
+  install-gauche*{nbsp}. You can uninstall by running *make
+  uninstall-gauche*{nbsp}.
+
+* To install an egg for CHICKEN 5 or CHICKEN 6, edit the GNUmakefile
+  to set _CHICKEN_5_SUDO_, _CHICKEN_6_SUDO_, and the CHICKEN tools as
+  needed. Then run *make install-chicken-5-egg* or *make
+  install-chicken-6-egg*{nbsp}. You can uninstall the egg by running
+  *make uninstall-chicken-5-egg* or
+  *make-uninstall-chicken-6-egg*{nbsp}. There are also targets to make
+  source tarballs of the CHICKEN eggs.
+
+== Testing
 
 * There is testing for the above, and also for Chibi Scheme, Loko
 Scheme (both R⁶RS and R⁷RS), and Sagittarius Scheme (both R⁶RS and
