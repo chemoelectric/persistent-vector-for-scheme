@@ -8,6 +8,7 @@ m4_changequote(“,”)m4_changecom“”m4_dnl
         (rnrs control (6))
         (rnrs programs (6))
         (rnrs io simple (6))
+        (rnrs exceptions (6))
         (rnrs r5rs (6))
         (srfi :1 lists)
         (srfi :27 random-bits)
