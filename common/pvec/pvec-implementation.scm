@@ -720,24 +720,27 @@
   (case-lambda
     ((v i x)
      (let ((len (vector-length x)))
-       (check-i v i x (fx- len i))
+       (check-i v i x 0 len)
        (copy-to-pvec v i x 0 len)))
     ((v i x start)
      (let ((len (vector-length x)))
-       (check-i v i x (fx- len start))
+       (check-i v i x start len)
        (check-indexes x start len)
        (copy-to-pvec v i x start (fx- len start))))
     ((v i x start end)
      (let ((len (vector-length x)))
-       (check-i v i x (fx- end start))
+       (check-i v i x start end)
        (check-indexes x start end len)
        (copy-to-pvec v i x start (fx- end start))))))
 
-(define (check-i v i x room)
+(define (check-i v i x start end)
   (when (fxnegative? i)
     (error "index must be non-negative" i))
-  (when (fx<? (fx- (pvec-length v) i) room)
-    (error "there is not enough room for this pvec-sets" i)))
+  (let ((room (fx- (pvec-length v) i))
+        (sets-size (fx- end start)))
+    (when (fx<? room sets-size)
+      (error "there is not enough room for this pvec-sets"
+             v i x start end))))
 
 (define (copy-to-pvec v i w j n)
   ;; Copy n entries to the persistent vector v, starting at i, from

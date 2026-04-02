@@ -288,6 +288,40 @@
 
 (test-equal (iota 1000) (pvec->list (pvec-ec (:pvec i (list->pvec (iota 1000))) i)))
 
+(let ((pv (pvec 0 1 2 3 4 5 6 7 8 9)))
+  (pvec-sets pv 0 '#(0 1 2 3 4 5 6 7 8 9)))
+(let ((pv (pvec 0 1 2 3 4 5 6 7 8 9)))
+  (call/cc
+   (lambda (cc)
+     (with-exception-handler
+         (lambda (exc)
+           (test-assert (error-object? exc))
+           (cc))
+       (lambda ()
+         (pvec-sets pv 1 '#(0 1 2 3 4 5 6 7 8 9)))))))
+(let ((pv (pvec 0 1 2 3 4 5 6 7 8 9)))
+  (pvec-sets pv 8 '#(0 1 2 3 4 5 6 7 8 9) 8))
+(let ((pv (pvec 0 1 2 3 4 5 6 7 8 9)))
+  (call/cc
+   (lambda (cc)
+     (with-exception-handler
+         (lambda (exc)
+           (test-assert (error-object? exc))
+           (cc))
+       (lambda ()
+         (pvec-sets pv 8 '#(0 1 2 3 4 5 6 7 8 9) 7))))))
+(let ((pv (pvec 0 1 2 3 4 5 6 7 8 9)))
+  (pvec-sets pv 8 '#(0 1 2 3 4 5 6 7 8 9) 5 7))
+(let ((pv (pvec 0 1 2 3 4 5 6 7 8 9)))
+  (call/cc
+   (lambda (cc)
+     (with-exception-handler
+         (lambda (exc)
+           (test-assert (error-object? exc))
+           (cc))
+       (lambda ()
+         (pvec-sets pv 8 '#(0 1 2 3 4 5 6 7 8 9) 4 7))))))
+
 (display successes)
 (display " successes\n")
 (display failures)
