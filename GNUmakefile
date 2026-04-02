@@ -4,7 +4,7 @@
 .DELETE_ON_ERROR:
 .PHONY: clean
 
-VERSION = 1.0.0
+VERSION = 1.0.1
 
 include silent-rules.mk
 DEFAULT_VERBOSITY = 0
