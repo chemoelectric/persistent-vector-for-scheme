@@ -49,6 +49,20 @@ check-all-scheme-implementations: \
 	check-chicken-5-r7rs \
 	check-chicken-6-r7rs
 
+.PHONY: install-all-scheme-implementations
+install-all-scheme-implementations: \
+	install-chez \
+	install-gauche \
+	install-chicken-5-egg \
+	install-chicken-6-egg
+
+.PHONY: uninstall-all-scheme-implementations
+uninstall-all-scheme-implementations: \
+	uninstall-chez \
+	uninstall-gauche \
+	uninstall-chicken-5-egg \
+	uninstall-chicken-6-egg
+
 check-r6rs = $(call v,CHECK)$(foreach f,$(3),$(2)=$(PWD)/r6rs$${$(2)+:}$${$(2)} $(1) $(f);)
 check-r7rs = $(call v,CHECK)$(foreach f,$(3),$(2)=$(PWD)/r7rs$${$(2)+:}$${$(2)} $(1) $(f);)
 
